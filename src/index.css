@@ -1,0 +1,13 @@
+@import './assets/fonts/Encode_Sans_Expanded/encode_sans_expanded.css';
+
+@import 'tailwindcss';
+
+@theme {
+  --color-app-main: #0aad0a;
+  --color-app-light: #f0f3f2;
+  --color-app-rating: #ffc908;
+}
+
+body {
+  font-family: 'Encode Sans Expanded', sans-serif;
+}
