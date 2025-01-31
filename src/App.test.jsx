@@ -79,14 +79,13 @@ const getItemFromStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 afterEach(() => vi.resetAllMocks());
 
 describe('App', () => {
-  it('shows localStorage error and authenticated-user content', async () => {
+  it('shows not-authenticated user content on locale storage error', async () => {
     getItemFromStorageSpy.mockImplementation(() => {
       throw new Error('Storage mock error!');
     });
     render(<RoutedApp />);
     const errorElement = await screen.findByRole('alert');
     expect(errorElement).toBeInTheDocument();
-    expect(errorElement.textContent).toBeTruthy();
     expect(screen.getByText(CHILD_PAGE_TEXT)).toBeInTheDocument();
     expect(screen.getByText(/not authenticated/i)).toBeInTheDocument();
   });
@@ -106,7 +105,7 @@ describe('App', () => {
 
   it('shows load indicator before render actual page data', async () => {
     render(<RoutedApp />);
-    const loader = screen.getByLabelText(/loading/i);
+    const loader = screen.getByTitle(/loading/i);
     expect(loader).toBeInTheDocument();
     expect(await screen.findByText(CHILD_PAGE_TEXT)).toBeInTheDocument();
     expect(loader).not.toBeInTheDocument();

@@ -2,14 +2,10 @@ import './index.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import {
-  SIGNUP_PATH,
-  SIGNIN_PATH,
-  authFormAction,
-} from './components/AuthForm/auth-form-utils';
+import { authFormAction } from './components/AuthForm/auth-form-utils';
 import AuthForm from './components/AuthForm/AuthForm';
 import Guard from './components/AuthGuard/AuthGuard';
-import App from './App';
+import App, { SIGNUP_PATH, SIGNIN_PATH, SIGNOUT_PATH } from './App';
 
 const router = createBrowserRouter([
   {
@@ -28,7 +24,10 @@ const router = createBrowserRouter([
       },
       {
         element: <Guard authPath={SIGNIN_PATH} />,
-        children: [{ index: true, element: <h2 className="mt-16">Home</h2> }],
+        children: [
+          { path: SIGNOUT_PATH, element: <App /> },
+          { index: true, element: <h2 className="mt-16">Home</h2> },
+        ],
       },
     ],
   },

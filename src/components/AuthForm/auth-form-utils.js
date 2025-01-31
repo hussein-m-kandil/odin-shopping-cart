@@ -1,4 +1,5 @@
 import { redirect } from 'react-router-dom';
+import { SIGNIN_PATH, SIGNUP_PATH } from '../../App';
 import { postSignin, postSignup } from '../../services/auth';
 
 export const ENTRIES_NAMES = {
@@ -145,9 +146,6 @@ async function signin(formData) {
   return { authData: data };
 }
 
-export const SIGNUP_PATH = '/signup';
-export const SIGNIN_PATH = '/signin';
-
 export async function authFormAction({ request }) {
   const formData = await request.formData();
   const intent = formData.get('intent');
@@ -156,6 +154,7 @@ export async function authFormAction({ request }) {
   if (formErrors) return { formErrors };
   try {
     if (intent === SIGNUP_PATH) {
+      formData.delete(ENTRIES_NAMES.passwordConfirmation);
       const { error } = await postSignup(formData);
       if (error) throw error;
       try {
@@ -165,7 +164,7 @@ export async function authFormAction({ request }) {
       } catch {
         redirect(SIGNIN_PATH);
       }
-    } else if (intent === '/signin') {
+    } else if (intent === SIGNIN_PATH) {
       return await signin(formData);
     } else {
       redirect(intent);

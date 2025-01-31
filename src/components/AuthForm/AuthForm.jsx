@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react';
 import {
   useLocation,
-  useOutletContext,
   useFetcher,
   Navigate,
+  useOutletContext,
 } from 'react-router-dom';
 import {
   ENTRIES_NAMES,
-  SIGNIN_PATH,
   signinEntriesData,
-  SIGNUP_PATH,
   signupEntriesData,
   validateFormData,
 } from './auth-form-utils';
 import ComboInput from '../ComboInput/ComboInput';
 import Button from '../Button/Button';
 import { BiLoaderAlt } from 'react-icons/bi';
+import { SIGNIN_PATH, SIGNUP_PATH } from '../../App';
 
 const KNOWN_PATHS = [SIGNUP_PATH, SIGNIN_PATH];
 
@@ -30,16 +29,18 @@ function AuthForm() {
   );
 
   const { authenticated, authenticate } = useOutletContext();
+
   const fetcher = useFetcher();
   const submitting = fetcher.state !== 'idle';
   const { authData, submitError, formErrors } = fetcher.data || {};
 
   useEffect(() => {
     if (submitError) setErrorMessage(submitError);
-  }, [submitError, submitting]);
-
-  if (authenticated || authData || unknownPath) {
     if (authData) authenticate(authData);
+  }, [submitError, submitting, authenticate, authData]);
+
+  if (authenticated || unknownPath) {
+    console.log('Authenticated!');
     return <Navigate to="/" replace={true} />;
   }
 

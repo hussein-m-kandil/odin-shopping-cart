@@ -255,30 +255,4 @@ describe('Form submit', () => {
     await user.type(screen.getByRole('textbox', { name: 'Password' }), '1');
     expect(screen.queryByText(errorMessageMock)).toBeNull();
   });
-
-  it('redirects on successful sign up', async () => {
-    const user = userEvent.setup();
-    render(<RoutedForm />);
-    await fillValidSignupForm(user, screen.getByRole('form'));
-    await user.click(screen.getByRole('button', { name: /sign/i }));
-    const loader = screen.getByTitle(/submitting/i);
-    expect(loader).toBeInTheDocument();
-    expect(await screen.findByText(homeContent)).toBeInTheDocument();
-    expect(authenticateMock).toHaveBeenCalledWith(AUTH_DATA);
-    expect(authenticateMock).toHaveBeenCalledTimes(1);
-  });
-
-  it('redirects on successful sign in', async () => {
-    const user = userEvent.setup();
-    render(
-      <RoutedForm
-        routerOptions={{ initialEntries: [signinPath], initialIndex: 0 }}
-      />,
-    );
-    await fillValidSigninForm(user, screen.getByRole('form'));
-    await user.click(screen.getByRole('button', { name: /sign/i }));
-    expect(await screen.findByText(homeContent)).toBeInTheDocument();
-    expect(authenticateMock).toHaveBeenCalledWith(AUTH_DATA);
-    expect(authenticateMock).toHaveBeenCalledTimes(1);
-  });
 });

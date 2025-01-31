@@ -1,74 +1,73 @@
-import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { BiLoader } from 'react-icons/bi';
+import { Outlet, useMatch } from 'react-router-dom';
 import { getSigninValidation, getSignout } from './services/auth';
 import Navbar from './components/Navbar/Navbar';
+import { useEffect, useState } from 'react';
+import { BiLoaderAlt } from 'react-icons/bi';
 
-const LOCALE_STORAGE_ERR_MSG =
-  'Oh no, amnesia! We may not remember you in subsequent visits.';
 const AUTH_DATA_KEY = 'seco_seco';
+export const SIGNUP_PATH = '/signup';
+export const SIGNIN_PATH = '/signin';
+export const SIGNOUT_PATH = '/signout';
+
+let parsedAuthData = null;
+try {
+  const serializedAuthData = localStorage.getItem(AUTH_DATA_KEY);
+  if (serializedAuthData) {
+    parsedAuthData = JSON.parse(serializedAuthData);
+  }
+} catch (error) {
+  console.log(error);
+}
 
 function App() {
   const [errorMessage, setErrorMessage] = useState(null);
-  const [authData, setAuthData] = useState(null);
+  const [authData, setAuthData] = useState(parsedAuthData);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const oldAuthData = localStorage.getItem(AUTH_DATA_KEY);
-      if (oldAuthData) {
-        // Set it into the state to trigger the validation effect
-        return setAuthData(JSON.parse(oldAuthData));
-      }
-    } catch {
-      setErrorMessage(LOCALE_STORAGE_ERR_MSG);
+    if (parsedAuthData) {
+      getSigninValidation(parsedAuthData['user-token'])
+        .then(({ data, error }) => {
+          if (parsedAuthData) {
+            // So, the component still mounted!
+            if (data === true) {
+              return setErrorMessage(null);
+            }
+            throw data ? new Error('Authentication failed!') : error;
+          }
+        })
+        .catch((error) => {
+          setAuthData(null);
+          setErrorMessage(error.message);
+        })
+        .finally(() => parsedAuthData && setLoading(false));
+      return () => (parsedAuthData = null);
     }
-    // So, no validation will be requested!
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    // Trigger user token validation on every change to its state
-    if (authData) {
-      let stillMounted = true;
-      getSigninValidation(authData['user-token'])
-        .then(({ data, error }) => {
-          if (stillMounted) {
-            if (data === true) {
-              setErrorMessage(null);
-              return;
-            }
-            setAuthData(null);
-            if (data) throw new Error(data);
-            else setErrorMessage(error.message);
-          }
-        })
-        .catch(() => {
-          setErrorMessage('Authentication failed! You may have to sign in.');
-        })
-        .finally(() => stillMounted && setLoading(false));
-      return () => (stillMounted = false);
-    }
-  }, [authData]);
+  const signoutPathMatch = useMatch(SIGNOUT_PATH);
 
-  const authenticate = (newAuthData) => {
-    if (newAuthData && newAuthData['user-token']) {
-      setAuthData(newAuthData);
+  useEffect(() => {
+    if (authData && signoutPathMatch) {
       try {
-        localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(newAuthData));
-      } catch {
-        setErrorMessage(LOCALE_STORAGE_ERR_MSG);
+        localStorage.removeItem(AUTH_DATA_KEY);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setAuthData(null);
+        // Just send a sign out request, no need to process the response!
+        getSignout(authData['user-token']);
       }
     }
-  };
+  }, [signoutPathMatch, authData]);
 
-  const signout = () => {
-    setAuthData(null);
+  const authenticate = (newAuthData) => {
+    setAuthData(newAuthData);
     try {
-      getSignout(authData['user-token']);
-      localStorage.removeItem(AUTH_DATA_KEY);
-    } catch (error) {
-      console.log(error);
+      localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(newAuthData));
+    } catch {
+      setErrorMessage('Storing authentication data failed!');
     }
   };
 
@@ -81,11 +80,11 @@ function App() {
         {errorMessage || ''}
       </div>
       {loading ? (
-        <div aria-label="Loading">
-          <BiLoader />
+        <div className="min-h-screen flex flex-col justify-center items-center text-4xl text-app-main">
+          <BiLoaderAlt title="Loading..." className="animate-spin" />
         </div>
       ) : (
-        <Outlet context={{ authenticate, signout, authenticated }} />
+        <Outlet context={{ authData, authenticated, authenticate }} />
       )}
     </>
   );
