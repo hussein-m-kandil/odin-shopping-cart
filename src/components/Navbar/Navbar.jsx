@@ -9,6 +9,16 @@ import { FaTwitter as Twitter } from 'react-icons/fa6';
 import { FaTiktok as Tiktok } from 'react-icons/fa6';
 import { FaBars as Bars } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import {
+  HOME_PATH,
+  CART_PATH,
+  BRANDS_PATH,
+  SIGNUP_PATH,
+  SIGNIN_PATH,
+  SIGNOUT_PATH,
+  PRODUCTS_PATH,
+  CATEGORIES_PATH,
+} from '../../App';
 
 const socialData = [
   { name: 'Instagram', icon: <Instagram />, url: 'https://www.instagram.com/' },
@@ -41,7 +51,7 @@ Social.propTypes = {
 function Navbar({ authenticated = false }) {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [expanded, setExpanded] = useState(false);
-
+  const signupPathMatch = useMatch(SIGNUP_PATH);
   const navRef = useRef(null);
 
   useEffect(() => {
@@ -113,35 +123,20 @@ function Navbar({ authenticated = false }) {
             className={`grow items-center gap-2 text-center text-xs max-sm:space-y-2 max-sm:px-2 sm:flex ${authenticated ? 'max-sm:pt-4' : ''}`}
             onClick={collapseNavMenuOnClickLink}
           >
-            {authenticated && (
-              <>
-                <li>
-                  <NavLink to="/" className={genNavLinkClasses}>
-                    Home
+            {authenticated &&
+              [
+                ['Home', HOME_PATH],
+                ['Cart', CART_PATH],
+                ['Products', PRODUCTS_PATH],
+                ['Categories', CATEGORIES_PATH],
+                ['Brands', BRANDS_PATH],
+              ].map(([pageName, pagePath]) => (
+                <li key={pagePath}>
+                  <NavLink to={pagePath} className={genNavLinkClasses}>
+                    {pageName}
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/cart" className={genNavLinkClasses}>
-                    Cart
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/products" className={genNavLinkClasses}>
-                    Products
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/categories" className={genNavLinkClasses}>
-                    Categories
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/brands" className={genNavLinkClasses}>
-                    Brands
-                  </NavLink>
-                </li>
-              </>
-            )}
+              ))}
             <li className="ms-auto">
               <div className="flex flex-wrap gap-2 text-xs max-sm:mx-auto max-sm:my-4 max-sm:w-fit">
                 {socialData.map((data) => (
@@ -151,23 +146,22 @@ function Navbar({ authenticated = false }) {
             </li>
             {authenticated ? (
               <li>
-                <NavLink to="/signout" className={genNavLinkClasses}>
+                <NavLink to={SIGNOUT_PATH} className={genNavLinkClasses}>
                   Sign out
                 </NavLink>
               </li>
+            ) : signupPathMatch ? (
+              <li>
+                <NavLink to={SIGNIN_PATH} className={genNavLinkClasses}>
+                  Sign in
+                </NavLink>
+              </li>
             ) : (
-              <>
-                <li>
-                  <NavLink to="/signin" className={genNavLinkClasses}>
-                    Sign in
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/signup" className={genNavLinkClasses}>
-                    Sign up
-                  </NavLink>
-                </li>
-              </>
+              <li>
+                <NavLink to={SIGNUP_PATH} className={genNavLinkClasses}>
+                  Sign up
+                </NavLink>
+              </li>
             )}
           </ul>
         )}

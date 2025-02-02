@@ -11,6 +11,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import Navbar from './Navbar.jsx';
 import PropTypes from 'prop-types';
+import { CART_PATH, SIGNIN_PATH, SIGNUP_PATH } from '../../App.jsx';
 
 /**
  * Asynchronous function that changes the screen's width,
@@ -60,7 +61,7 @@ describe('Navbar', () => {
     const { container } = render(
       <RoutedNavbar
         routerOptions={{
-          initialEntries: ['/cart'],
+          initialEntries: [CART_PATH],
           initialIndex: 0,
         }}
       />,
@@ -82,7 +83,7 @@ describe('Navbar content', () => {
     render(
       <RoutedNavbar
         routerOptions={{
-          initialEntries: ['/cart'],
+          initialEntries: [CART_PATH],
           initialIndex: 0,
         }}
       />,
@@ -141,12 +142,32 @@ describe('Navbar content', () => {
     ).toBeNull();
   });
 
-  it('contains the appropriate nav items for an unauthenticated user', () => {
+  it('Does not contain routes need authentication on unauthenticated render', () => {
     render(<RoutedNavbar authenticated={false} />);
     expect(screen.queryByRole('link', { name: 'Sign out' })).toBeNull();
     expect(screen.queryByRole('link', { name: 'Cart' })).toBeNull();
-    expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
+  });
+
+  it('contains only the "Sign up" link on unauthenticated render under "/signin"', () => {
+    render(
+      <RoutedNavbar
+        authenticated={false}
+        routerOptions={{ initialEntries: [SIGNIN_PATH] }}
+      />,
+    );
     expect(screen.getByRole('link', { name: 'Sign up' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Sign in' })).toBeNull();
+  });
+
+  it('contains only the "Sign in" link on unauthenticated render under "/signup"', () => {
+    render(
+      <RoutedNavbar
+        authenticated={false}
+        routerOptions={{ initialEntries: [SIGNUP_PATH] }}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Sign up' })).toBeNull();
   });
 
   it('contains the appropriate nav items for an authenticated user', () => {

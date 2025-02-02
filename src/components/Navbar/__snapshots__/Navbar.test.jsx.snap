@@ -3,7 +3,7 @@
 exports[`Navbar > renders  appropriately at the root route 1`] = `
 <div>
   <nav
-    class="fixed inset-x-0 top-0 bg-app-light p-4"
+    class="fixed z-30 inset-x-0 top-0 bg-app-light p-4"
   >
     <div
       class="container mx-auto items-center gap-4 sm:flex"
@@ -172,15 +172,6 @@ exports[`Navbar > renders  appropriately at the root route 1`] = `
           <a
             class="active:underline inline-block w-full max-sm-active:bg-gray-700 max-sm:bg-gray-200 max-sm:p-2 text-gray-700 font-light"
             data-discover="true"
-            href="/signin"
-          >
-            Sign in
-          </a>
-        </li>
-        <li>
-          <a
-            class="active:underline inline-block w-full max-sm-active:bg-gray-700 max-sm:bg-gray-200 max-sm:p-2 text-gray-700 font-light"
-            data-discover="true"
             href="/signup"
           >
             Sign up
@@ -195,7 +186,7 @@ exports[`Navbar > renders  appropriately at the root route 1`] = `
 exports[`Navbar > renders appropriately at a non-root route 1`] = `
 <div>
   <nav
-    class="fixed inset-x-0 top-0 bg-app-light p-4"
+    class="fixed z-30 inset-x-0 top-0 bg-app-light p-4"
   >
     <div
       class="container mx-auto items-center gap-4 sm:flex"
@@ -364,15 +355,6 @@ exports[`Navbar > renders appropriately at a non-root route 1`] = `
           <a
             class="active:underline inline-block w-full max-sm-active:bg-gray-700 max-sm:bg-gray-200 max-sm:p-2 text-gray-700 font-light"
             data-discover="true"
-            href="/signin"
-          >
-            Sign in
-          </a>
-        </li>
-        <li>
-          <a
-            class="active:underline inline-block w-full max-sm-active:bg-gray-700 max-sm:bg-gray-200 max-sm:p-2 text-gray-700 font-light"
-            data-discover="true"
             href="/signup"
           >
             Sign up
@@ -387,7 +369,7 @@ exports[`Navbar > renders appropriately at a non-root route 1`] = `
 exports[`Navbar > renders appropriately for an authenticated user 1`] = `
 <div>
   <nav
-    class="fixed inset-x-0 top-0 bg-app-light p-4"
+    class="fixed z-30 inset-x-0 top-0 bg-app-light p-4"
   >
     <div
       class="container mx-auto items-center gap-4 sm:flex"
