@@ -90,7 +90,7 @@ function Navbar({ authenticated = false }) {
   const navMenuId = 'controlled-nav-menu';
 
   return (
-    <nav ref={navRef} className="fixed inset-x-0 top-0 bg-app-light p-4">
+    <nav ref={navRef} className="fixed z-30 inset-x-0 top-0 bg-app-light p-4">
       <div className="container mx-auto items-center gap-4 sm:flex">
         <div
           className={`flex flex-wrap justify-between max-sm:px-2 ${expanded ? 'border-gray-200 max-sm:border-b max-sm:pb-4' : ''}`}
