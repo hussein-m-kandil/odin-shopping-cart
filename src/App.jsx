@@ -1,14 +1,19 @@
-import { Outlet, useMatch } from 'react-router-dom';
 import { getSigninValidation, getSignout } from './services/auth';
-import Navbar from './components/Navbar/Navbar';
+import { Slide, toast, ToastContainer } from 'react-toastify';
+import { Outlet, useMatch } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { BiLoaderAlt } from 'react-icons/bi';
-import { Slide, toast, ToastContainer } from 'react-toastify';
+import Navbar from './components/Navbar/Navbar';
 
-const AUTH_DATA_KEY = 'seco_seco';
+export const HOME_PATH = '/';
+export const CART_PATH = '/cart';
+export const BRANDS_PATH = '/brands';
 export const SIGNUP_PATH = '/signup';
 export const SIGNIN_PATH = '/signin';
 export const SIGNOUT_PATH = '/signout';
+export const PRODUCTS_PATH = '/products';
+export const CATEGORIES_PATH = '/categories';
+const AUTH_DATA_KEY = 'seco_seco';
 
 let parsedAuthData = null;
 try {
