@@ -4,6 +4,7 @@ import { Outlet, useMatch } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { BiLoaderAlt } from 'react-icons/bi';
 import Navbar from './components/Navbar/Navbar';
+import Footer from './components/Footer/Footer';
 
 export const HOME_PATH = '/';
 export const CART_PATH = '/cart';
@@ -98,6 +99,7 @@ function App() {
       ) : (
         <Outlet context={{ authData, authenticated, authenticate }} />
       )}
+      <Footer />
     </>
   );
 }
