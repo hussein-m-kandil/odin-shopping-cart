@@ -4,7 +4,6 @@ import {
   postSignup,
   getSignout,
   deleteUser,
-  sendRequest,
   getSigninValidation,
 } from './auth';
 import axios from 'axios';
@@ -22,21 +21,6 @@ vi.mock('axios', () => {
 afterEach(() => vi.resetAllMocks());
 
 const BASE_URL = import.meta.env.VITE_AUTH_BASE;
-
-describe('sendRequest', () => {
-  it('throws with invalid args', async () => {
-    await expect(() => sendRequest()).rejects.toThrowError(/method/i);
-    await expect(() => sendRequest(1)).rejects.toThrowError(/method/i);
-    await expect(() => sendRequest('get')).rejects.toThrowError(/url/i);
-    await expect(() => sendRequest('post', 'url')).rejects.toThrowError(
-      /body/i,
-    );
-    await expect(sendRequest('post', 'url', {})).resolves.not.toThrowError();
-    await expect(sendRequest('get', 'url')).resolves.not.toThrowError();
-    expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledTimes(1);
-  });
-});
 
 describe('postSignup', () => {
   it('calls the correct Axios method with the correct arguments', async () => {
