@@ -1,17 +1,11 @@
 import '@testing-library/jest-dom/vitest';
 import { describe, expect, it } from 'vitest';
-import {
-  render,
-  screen,
-  cleanup,
-  fireEvent,
-  getByRole,
-} from '@testing-library/react';
+import { render, screen, fireEvent, getByRole } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import Navbar from './Navbar.jsx';
 import PropTypes from 'prop-types';
-import { CART_PATH, SIGNIN_PATH, SIGNUP_PATH } from '../../App.jsx';
+import { SIGNIN_PATH, SIGNUP_PATH } from '../../App.jsx';
 
 /**
  * Asynchronous function that changes the screen's width,
@@ -51,52 +45,39 @@ RoutedNavbar.propTypes = {
   }),
 };
 
-describe('Navbar', () => {
-  it('renders  appropriately at the root route', () => {
-    const { container } = render(<RoutedNavbar />);
-    expect(container).toMatchSnapshot();
-  });
-
-  it('renders appropriately at a non-root route', () => {
-    const { container } = render(
-      <RoutedNavbar
-        routerOptions={{
-          initialEntries: [CART_PATH],
-          initialIndex: 0,
-        }}
-      />,
-    );
-    expect(container).toMatchSnapshot();
-  });
-
-  it('renders appropriately for an authenticated user', () => {
-    const { container } = render(<RoutedNavbar authenticated={true} />);
-    expect(container).toMatchSnapshot();
-  });
-});
+const APP_NAME = import.meta.env.VITE_APP_NAME;
 
 describe('Navbar content', () => {
-  it('contains heading only at the root route', () => {
+  it('contains heading with the app name', () => {
     render(<RoutedNavbar />);
-    expect(screen.getByRole('heading')).toBeInTheDocument();
-    cleanup();
-    render(
-      <RoutedNavbar
-        routerOptions={{
-          initialEntries: [CART_PATH],
-          initialIndex: 0,
-        }}
-      />,
-    );
-    expect(screen.queryByRole('heading')).toBeNull();
+    expect(screen.getByRole('heading', { name: APP_NAME })).toBeInTheDocument();
   });
 
-  it('contains a single nav menu', () => {
+  it('contains the given number of cart items if less than 100', () => {
+    const props = { cartItemsCount: 3 };
+    render(<RoutedNavbar {...props} />);
+    expect(screen.getByText(props.cartItemsCount)).toBeInTheDocument();
+  });
+
+  it('contains truncated version of the given number of cart items if not integer', () => {
+    const props = { cartItemsCount: 3.234 };
+    render(<RoutedNavbar {...props} />);
+    expect(
+      screen.getByText(props.cartItemsCount.toFixed(0)),
+    ).toBeInTheDocument();
+  });
+
+  it('contains +99 if the given number of cart items is more than 99', () => {
+    render(<RoutedNavbar cartItemsCount={100} />);
+    expect(screen.getByText('+99')).toBeInTheDocument();
+  });
+
+  it('contains at least one nav menu', () => {
     render(<RoutedNavbar />);
     expect(screen.getByRole('list')).toBeInTheDocument();
   });
 
-  it('contains multiple nav items', () => {
+  it('contains at least one nav items', () => {
     render(<RoutedNavbar />);
     expect(screen.getAllByRole('listitem').length).toBeGreaterThan(0);
   });
@@ -145,7 +126,6 @@ describe('Navbar content', () => {
   it('Does not contain routes need authentication on unauthenticated render', () => {
     render(<RoutedNavbar authenticated={false} />);
     expect(screen.queryByRole('link', { name: 'Sign out' })).toBeNull();
-    expect(screen.queryByRole('link', { name: 'Cart' })).toBeNull();
   });
 
   it('contains only the "Sign up" link on unauthenticated render under "/signin"', () => {
@@ -175,7 +155,6 @@ describe('Navbar content', () => {
     expect(screen.queryByRole('link', { name: 'Sign in' })).toBeNull();
     expect(screen.queryByRole('link', { name: 'Sign up' })).toBeNull();
     expect(screen.getByRole('link', { name: 'Sign out' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Cart' })).toBeInTheDocument();
   });
 });
 

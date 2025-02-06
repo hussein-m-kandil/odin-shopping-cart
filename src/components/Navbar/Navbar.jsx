@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { NavLink, useMatch } from 'react-router-dom';
+import { Link, NavLink, useMatch } from 'react-router-dom';
 import { BsCart4 as ShoppingCart } from 'react-icons/bs';
 import { FaInstagram as Instagram } from 'react-icons/fa6';
 import { FaLinkedin as LinkedIn } from 'react-icons/fa6';
@@ -12,12 +12,9 @@ import PropTypes from 'prop-types';
 import {
   HOME_PATH,
   CART_PATH,
-  BRANDS_PATH,
   SIGNUP_PATH,
   SIGNIN_PATH,
   SIGNOUT_PATH,
-  PRODUCTS_PATH,
-  CATEGORIES_PATH,
 } from '../../App';
 
 const socialData = [
@@ -48,7 +45,7 @@ Social.propTypes = {
   icon: PropTypes.element.isRequired,
 };
 
-function Navbar({ authenticated = false }) {
+function Navbar({ authenticated = false, cartItemsCount = 0 }) {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [expanded, setExpanded] = useState(false);
   const signupPathMatch = useMatch(SIGNUP_PATH);
@@ -65,12 +62,15 @@ function Navbar({ authenticated = false }) {
   useEffect(() => {
     const nav = navRef.current;
     const html = document.documentElement;
+    const oldHtmlPaddingTop = html.style.paddingTop;
     const collapseNavMenuOnClickOutside = (e) => {
       if (!nav.contains(e.target)) setExpanded(false);
     };
     html.addEventListener('click', collapseNavMenuOnClickOutside);
+    html.style.paddingTop = getComputedStyle(nav).height;
     return () => {
       html.removeEventListener('click', collapseNavMenuOnClickOutside);
+      html.style.paddingTop = oldHtmlPaddingTop;
     };
   }, []);
 
@@ -84,26 +84,20 @@ function Navbar({ authenticated = false }) {
     return `${base} ${sm} ${isActive ? 'text-black font-normal' : 'text-gray-700 font-light'}`;
   };
 
-  const BrandTag = useMatch('/') ? 'h1' : 'div';
-
   const wideScreen = screenWidth >= 640;
   const navMenuId = 'controlled-nav-menu';
 
   return (
     <nav ref={navRef} className="fixed z-30 inset-x-0 top-0 bg-app-light p-4">
-      <div className="container mx-auto items-center gap-4 sm:flex">
+      <div className="container mx-auto items-center sm:flex">
         <div
           className={`flex flex-wrap justify-between max-sm:px-2 ${expanded ? 'border-gray-200 max-sm:border-b max-sm:pb-4' : ''}`}
         >
-          <div className="flex items-center">
-            <ShoppingCart
-              className="h-5 text-xl text-app-main"
-              alt="An illustration for a shopping cart"
-            />
-            <BrandTag className="text-sm font-bold">
+          <h1 className="font-bold">
+            <Link to={HOME_PATH}>
               {import.meta.env.VITE_APP_NAME || 'App Name'}
-            </BrandTag>
-          </div>
+            </Link>
+          </h1>
           {!wideScreen && (
             <button
               type="button"
@@ -123,20 +117,25 @@ function Navbar({ authenticated = false }) {
             className={`grow items-center gap-2 text-center text-xs max-sm:space-y-2 max-sm:px-2 sm:flex ${authenticated ? 'max-sm:pt-4' : ''}`}
             onClick={collapseNavMenuOnClickLink}
           >
-            {authenticated &&
-              [
-                ['Home', HOME_PATH],
-                ['Cart', CART_PATH],
-                ['Products', PRODUCTS_PATH],
-                ['Categories', CATEGORIES_PATH],
-                ['Brands', BRANDS_PATH],
-              ].map(([pageName, pagePath]) => (
-                <li key={pagePath}>
-                  <NavLink to={pagePath} className={genNavLinkClasses}>
-                    {pageName}
-                  </NavLink>
-                </li>
-              ))}
+            <li>
+              <NavLink
+                to={CART_PATH}
+                aria-label="Cart"
+                className={({ isActive }) =>
+                  `relative${isActive ? '' : ' opacity-65'}`
+                }
+              >
+                <span className="h-5 text-2xl text-app-main">
+                  <ShoppingCart
+                    className="inline"
+                    alt="An illustration for a shopping cart"
+                  />
+                </span>
+                <span className="bg-red-700 absolute -top-12/10 -right-1/2 w-5.5 h-5.5 flex flex-col justify-center rounded-full text-white text-[0.60rem] font-bold">
+                  {cartItemsCount > 99 ? '+99' : cartItemsCount.toFixed(0)}
+                </span>
+              </NavLink>
+            </li>
             <li className="ms-auto">
               <div className="flex flex-wrap gap-2 text-xs max-sm:mx-auto max-sm:my-4 max-sm:w-fit">
                 {socialData.map((data) => (
@@ -170,6 +169,9 @@ function Navbar({ authenticated = false }) {
   );
 }
 
-Navbar.propTypes = { authenticated: PropTypes.bool };
+Navbar.propTypes = {
+  authenticated: PropTypes.bool,
+  cartItemsCount: PropTypes.number,
+};
 
 export default Navbar;

@@ -1,10 +1,10 @@
-import { getSigninValidation, getSignout } from './services/auth';
 import { Slide, toast, ToastContainer } from 'react-toastify';
-import { Outlet, useMatch } from 'react-router-dom';
+import { getSigninValidation, getSignout } from './services/auth';
+import { Outlet, ScrollRestoration, useMatch } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { BiLoaderAlt } from 'react-icons/bi';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
+import Loader from './Loader';
 
 export const HOME_PATH = '/';
 export const CART_PATH = '/cart';
@@ -13,6 +13,7 @@ export const SIGNUP_PATH = '/signup';
 export const SIGNIN_PATH = '/signin';
 export const SIGNOUT_PATH = '/signout';
 export const PRODUCTS_PATH = '/products';
+export const CHECKOUT_PATH = '/checkout';
 export const CATEGORIES_PATH = '/categories';
 const AUTH_DATA_KEY = 'seco_seco';
 
@@ -30,6 +31,7 @@ function App() {
   const [authData, setAuthData] = useState(parsedAuthData);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     if (parsedAuthData) {
@@ -88,17 +90,47 @@ function App() {
 
   const authenticated = Boolean(authData);
 
+  const updateCart = (product, quantity) => {
+    if (quantity > 0) {
+      let existedItem = false;
+      const newItem = { product, quantity };
+      const updatedCart = cart.map((item) => {
+        if (item.product.id === newItem.product.id) {
+          existedItem = true;
+          return newItem;
+        }
+        return item;
+      });
+      if (!existedItem) updatedCart.push(newItem);
+      setCart(updatedCart);
+    } else {
+      setCart(cart.filter((item) => item.product.id !== product.id));
+    }
+  };
+
   return (
     <>
-      <Navbar authenticated={authenticated} />
+      <ScrollRestoration />
+      <Navbar
+        authenticated={authenticated}
+        cartItemsCount={cart.reduce((sum, { quantity: q }) => sum + q, 0)}
+      />
       <ToastContainer />
-      {loading ? (
-        <div className="min-h-screen flex flex-col justify-center items-center text-4xl text-app-main">
-          <BiLoaderAlt title="Loading..." className="animate-spin" />
-        </div>
-      ) : (
-        <Outlet context={{ authData, authenticated, authenticate }} />
-      )}
+      <div className="min-h-screen flex flex-col justify-center items-center">
+        {loading ? (
+          <Loader />
+        ) : (
+          <Outlet
+            context={{
+              cart,
+              authData,
+              updateCart,
+              authenticate,
+              authenticated,
+            }}
+          />
+        )}
+      </div>
       <Footer />
     </>
   );
