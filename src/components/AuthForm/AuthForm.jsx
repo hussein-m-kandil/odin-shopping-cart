@@ -80,7 +80,7 @@ function AuthForm() {
       method="post"
       aria-live="assertive"
       aria-labelledby="form-label"
-      className="mx-auto min-h-screen max-w-xl flex flex-col justify-center p-4 pt-16"
+      className="mx-auto w-full max-w-xl flex flex-col justify-center px-4 py-8"
     >
       <h1 id="form-label" className="font-bold mb-4">
         {title}

@@ -21,6 +21,7 @@ function Navbar({
   const [expanded, setExpanded] = useState(false);
   const signupPathMatch = useMatch(SIGNUP_PATH);
   const navRef = useRef(null);
+  const divRef = useRef(null);
 
   useEffect(() => {
     const handleScreenResize = () => {
@@ -33,15 +34,13 @@ function Navbar({
   useEffect(() => {
     const nav = navRef.current;
     const html = document.documentElement;
-    const oldHtmlPaddingTop = html.style.paddingTop;
     const collapseNavMenuOnClickOutside = (e) => {
       if (!nav.contains(e.target)) setExpanded(false);
     };
     html.addEventListener('click', collapseNavMenuOnClickOutside);
-    html.style.paddingTop = getComputedStyle(nav).height;
+    divRef.current.style.paddingTop = getComputedStyle(nav).height;
     return () => {
       html.removeEventListener('click', collapseNavMenuOnClickOutside);
-      html.style.paddingTop = oldHtmlPaddingTop;
     };
   }, []);
 
@@ -59,91 +58,96 @@ function Navbar({
   const navMenuId = 'controlled-nav-menu';
 
   return (
-    <nav ref={navRef} className="fixed z-30 inset-x-0 top-0 bg-app-light p-4">
-      <div className="container mx-auto items-center sm:flex">
-        <div
-          className={`flex flex-wrap justify-between max-sm:px-2 ${expanded ? 'border-gray-200 max-sm:border-b max-sm:pb-4' : ''}`}
-        >
-          <h1 className="font-bold">
-            <Link to={HOME_PATH}>
-              {import.meta.env.VITE_APP_NAME || 'App Name'}
-            </Link>
-          </h1>
-          {!wideScreen && (
-            <button
-              type="button"
-              aria-controls={navMenuId}
-              aria-expanded={expanded}
-              aria-label="Toggle navigation menu"
-              className={`ms-auto transition-transform ${expanded ? '-rotate-90' : ''}`}
-              onClick={() => setExpanded(!expanded)}
+    <>
+      <nav ref={navRef} className="fixed z-30 inset-x-0 top-0 bg-app-light p-4">
+        <div className="container mx-auto items-center sm:flex">
+          <div
+            className={`flex flex-wrap justify-between max-sm:px-2 ${expanded ? 'border-gray-200 max-sm:border-b max-sm:pb-4' : ''}`}
+          >
+            <h1 className="font-bold">
+              <Link to={HOME_PATH}>
+                {import.meta.env.VITE_APP_NAME || 'App Name'}
+              </Link>
+            </h1>
+            {!wideScreen && (
+              <button
+                type="button"
+                aria-controls={navMenuId}
+                aria-expanded={expanded}
+                aria-label="Toggle navigation menu"
+                className={`ms-auto transition-transform ${expanded ? '-rotate-90' : ''}`}
+                onClick={() => setExpanded(!expanded)}
+              >
+                <Bars />
+              </button>
+            )}
+          </div>
+          {(wideScreen || expanded) && (
+            <ul
+              id={navMenuId}
+              className={`grow items-center gap-2 text-center text-xs max-sm:space-y-2 max-sm:px-2 sm:flex ${authenticated ? 'max-sm:pt-4' : ''}`}
+              onClick={collapseNavMenuOnClickLink}
             >
-              <Bars />
-            </button>
+              <li>
+                <NavLink
+                  to={CART_PATH}
+                  aria-label="Cart"
+                  className={({ isActive }) =>
+                    `relative${isActive ? '' : ' opacity-65'}`
+                  }
+                >
+                  <span className="text-2xl text-app-main">
+                    <ShoppingCart className="inline" />
+                  </span>
+                  <span className="bg-red-700 absolute -top-11/10 -right-1/2 py-0.5 min-w-6 rounded-lg text-white text-[0.60rem] font-semibold">
+                    {cartItemsCount > 99 ? '+99' : cartItemsCount.toFixed(0)}
+                    {/* +99 */}
+                  </span>
+                </NavLink>
+              </li>
+              <li className="ms-auto">
+                <NavLink
+                  to={WISHLIST_PATH}
+                  aria-label="Wishlist"
+                  className={({ isActive }) =>
+                    `${isActive ? '' : ' opacity-65'}`
+                  }
+                >
+                  <span className="text-2xl text-red-700 opacity-75 relative">
+                    <BsHeartFill className="inline" />
+                    <span className="absolute top-1/2 left-1/2 -translate-1/2 text-white text-[0.60rem] font-bold">
+                      {wishlistItemsCount > 99
+                        ? '+99'
+                        : wishlistItemsCount.toFixed(0)}
+                    </span>
+                  </span>
+                </NavLink>
+              </li>
+              {authenticated ? (
+                <li>
+                  <NavLink to={SIGNOUT_PATH} className={genNavLinkClasses}>
+                    Sign out
+                  </NavLink>
+                </li>
+              ) : signupPathMatch ? (
+                <li>
+                  <NavLink to={SIGNIN_PATH} className={genNavLinkClasses}>
+                    Sign in
+                  </NavLink>
+                </li>
+              ) : (
+                <li>
+                  <NavLink to={SIGNUP_PATH} className={genNavLinkClasses}>
+                    Sign up
+                  </NavLink>
+                </li>
+              )}
+            </ul>
           )}
         </div>
-        {(wideScreen || expanded) && (
-          <ul
-            id={navMenuId}
-            className={`grow items-center gap-2 text-center text-xs max-sm:space-y-2 max-sm:px-2 sm:flex ${authenticated ? 'max-sm:pt-4' : ''}`}
-            onClick={collapseNavMenuOnClickLink}
-          >
-            <li>
-              <NavLink
-                to={CART_PATH}
-                aria-label="Cart"
-                className={({ isActive }) =>
-                  `relative${isActive ? '' : ' opacity-65'}`
-                }
-              >
-                <span className="text-2xl text-app-main">
-                  <ShoppingCart className="inline" />
-                </span>
-                <span className="bg-red-700 absolute -top-11/10 -right-1/2 py-0.5 min-w-6 rounded-lg text-white text-[0.60rem] font-semibold">
-                  {cartItemsCount > 99 ? '+99' : cartItemsCount.toFixed(0)}
-                  {/* +99 */}
-                </span>
-              </NavLink>
-            </li>
-            <li className="ms-auto">
-              <NavLink
-                to={WISHLIST_PATH}
-                aria-label="Wishlist"
-                className={({ isActive }) => `${isActive ? '' : ' opacity-65'}`}
-              >
-                <span className="text-2xl text-red-700 opacity-75 relative">
-                  <BsHeartFill className="inline" />
-                  <span className="absolute top-1/2 left-1/2 -translate-1/2 text-white text-[0.60rem] font-bold">
-                    {wishlistItemsCount > 99
-                      ? '+99'
-                      : wishlistItemsCount.toFixed(0)}
-                  </span>
-                </span>
-              </NavLink>
-            </li>
-            {authenticated ? (
-              <li>
-                <NavLink to={SIGNOUT_PATH} className={genNavLinkClasses}>
-                  Sign out
-                </NavLink>
-              </li>
-            ) : signupPathMatch ? (
-              <li>
-                <NavLink to={SIGNIN_PATH} className={genNavLinkClasses}>
-                  Sign in
-                </NavLink>
-              </li>
-            ) : (
-              <li>
-                <NavLink to={SIGNUP_PATH} className={genNavLinkClasses}>
-                  Sign up
-                </NavLink>
-              </li>
-            )}
-          </ul>
-        )}
-      </div>
-    </nav>
+      </nav>
+      <div className="nav-div" ref={divRef}></div>
+    </>
   );
 }
 

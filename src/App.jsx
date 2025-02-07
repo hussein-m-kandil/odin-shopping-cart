@@ -124,28 +124,32 @@ function App() {
   return (
     <>
       <ScrollRestoration />
-      <Navbar
-        authenticated={authenticated}
-        wishlistItemsCount={wishlist.length}
-        cartItemsCount={cart.reduce((sum, { quantity: q }) => sum + q, 0)}
-      />
-      <ToastContainer />
       <div className="min-h-screen flex flex-col justify-center items-center">
-        {loading ? (
-          <Loader />
-        ) : (
-          <Outlet
-            context={{
-              cart,
-              wishlist,
-              authData,
-              updateCart,
-              authenticate,
-              authenticated,
-              updateWishlist,
-            }}
+        <header>
+          <Navbar
+            authenticated={authenticated}
+            wishlistItemsCount={wishlist.length}
+            cartItemsCount={cart.reduce((sum, { quantity: q }) => sum + q, 0)}
           />
-        )}
+          <ToastContainer />
+        </header>
+        <main className="w-full h-full">
+          {loading ? (
+            <Loader />
+          ) : (
+            <Outlet
+              context={{
+                cart,
+                wishlist,
+                authData,
+                updateCart,
+                authenticate,
+                authenticated,
+                updateWishlist,
+              }}
+            />
+          )}
+        </main>
       </div>
       <Footer />
     </>
