@@ -12,6 +12,7 @@ export const BRANDS_PATH = '/brands';
 export const SIGNUP_PATH = '/signup';
 export const SIGNIN_PATH = '/signin';
 export const SIGNOUT_PATH = '/signout';
+export const WISHLIST_PATH = '/wishlist';
 export const PRODUCTS_PATH = '/products';
 export const CHECKOUT_PATH = '/checkout';
 export const CATEGORIES_PATH = '/categories';
@@ -31,6 +32,7 @@ function App() {
   const [authData, setAuthData] = useState(parsedAuthData);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [wishlist, setWishlist] = useState([]);
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
@@ -108,11 +110,23 @@ function App() {
     }
   };
 
+  const updateWishlist = (item) => {
+    const index = wishlist.findIndex(
+      (wishItem) => wishItem.product.id === item.product.id,
+    );
+    if (index > -1) {
+      setWishlist([...wishlist.slice(0, index), ...wishlist.slice(index + 1)]);
+    } else {
+      setWishlist([...wishlist, item]);
+    }
+  };
+
   return (
     <>
       <ScrollRestoration />
       <Navbar
         authenticated={authenticated}
+        wishlistItemsCount={wishlist.length}
         cartItemsCount={cart.reduce((sum, { quantity: q }) => sum + q, 0)}
       />
       <ToastContainer />
@@ -123,10 +137,12 @@ function App() {
           <Outlet
             context={{
               cart,
+              wishlist,
               authData,
               updateCart,
               authenticate,
               authenticated,
+              updateWishlist,
             }}
           />
         )}

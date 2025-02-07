@@ -53,7 +53,11 @@ const updateCartMock = vi.fn();
 const cartMock = vi.fn(() => []);
 
 function AppMock() {
-  return <Outlet context={{ cart: cartMock(), updateCart: updateCartMock }} />;
+  return (
+    <Outlet
+      context={{ wishlist: [], cart: cartMock(), updateCart: updateCartMock }}
+    />
+  );
 }
 
 function RoutedHome() {

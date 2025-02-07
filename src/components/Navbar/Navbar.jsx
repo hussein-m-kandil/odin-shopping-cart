@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useMatch } from 'react-router-dom';
-import { BsCart4 as ShoppingCart } from 'react-icons/bs';
+import { BsHeartFill, BsCart4 as ShoppingCart } from 'react-icons/bs';
 import { FaInstagram as Instagram } from 'react-icons/fa6';
 import { FaLinkedin as LinkedIn } from 'react-icons/fa6';
 import { FaFacebook as Facebook } from 'react-icons/fa6';
@@ -15,6 +15,7 @@ import {
   SIGNUP_PATH,
   SIGNIN_PATH,
   SIGNOUT_PATH,
+  WISHLIST_PATH,
 } from '../../App';
 
 const socialData = [
@@ -45,7 +46,11 @@ Social.propTypes = {
   icon: PropTypes.element.isRequired,
 };
 
-function Navbar({ authenticated = false, cartItemsCount = 0 }) {
+function Navbar({
+  authenticated = false,
+  cartItemsCount = 0,
+  wishlistItemsCount = 0,
+}) {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [expanded, setExpanded] = useState(false);
   const signupPathMatch = useMatch(SIGNUP_PATH);
@@ -125,18 +130,32 @@ function Navbar({ authenticated = false, cartItemsCount = 0 }) {
                   `relative${isActive ? '' : ' opacity-65'}`
                 }
               >
-                <span className="h-5 text-2xl text-app-main">
-                  <ShoppingCart
-                    className="inline"
-                    alt="An illustration for a shopping cart"
-                  />
+                <span className="text-2xl text-app-main">
+                  <ShoppingCart className="inline" />
                 </span>
-                <span className="bg-red-700 absolute -top-12/10 -right-1/2 w-5.5 h-5.5 flex flex-col justify-center rounded-full text-white text-[0.60rem] font-bold">
+                <span className="bg-red-700 absolute -top-11/10 -right-1/2 py-0.5 min-w-6 rounded-lg text-white text-[0.60rem] font-semibold">
                   {cartItemsCount > 99 ? '+99' : cartItemsCount.toFixed(0)}
+                  {/* +99 */}
                 </span>
               </NavLink>
             </li>
             <li className="ms-auto">
+              <NavLink
+                to={WISHLIST_PATH}
+                aria-label="Wishlist"
+                className={({ isActive }) => `${isActive ? '' : ' opacity-65'}`}
+              >
+                <span className="text-2xl text-red-700 opacity-75 relative">
+                  <BsHeartFill className="inline" />
+                  <span className="absolute top-1/2 left-1/2 -translate-1/2 text-white text-[0.60rem] font-bold">
+                    {wishlistItemsCount > 99
+                      ? '+99'
+                      : wishlistItemsCount.toFixed(0)}
+                  </span>
+                </span>
+              </NavLink>
+            </li>
+            <li>
               <div className="flex flex-wrap gap-2 text-xs max-sm:mx-auto max-sm:my-4 max-sm:w-fit">
                 {socialData.map((data) => (
                   <Social key={data.url} {...data} />
@@ -172,6 +191,7 @@ function Navbar({ authenticated = false, cartItemsCount = 0 }) {
 Navbar.propTypes = {
   authenticated: PropTypes.bool,
   cartItemsCount: PropTypes.number,
+  wishlistItemsCount: PropTypes.number,
 };
 
 export default Navbar;

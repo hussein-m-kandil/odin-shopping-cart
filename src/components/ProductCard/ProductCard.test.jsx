@@ -23,8 +23,9 @@ const itemMock = vi.fn(() => {
     quantity: 0,
   };
 });
-
 const updateCartMock = vi.fn();
+const updateWishlistMock = vi.fn();
+const wishlistMock = vi.fn(() => []);
 
 afterEach(() => vi.resetAllMocks());
 
@@ -34,7 +35,15 @@ function RoutedProductCard() {
       router={createMemoryRouter([
         {
           path: '/',
-          element: <Outlet context={{ updateCart: updateCartMock }} />,
+          element: (
+            <Outlet
+              context={{
+                wishlist: wishlistMock(),
+                updateCart: updateCartMock,
+                updateWishlist: updateWishlistMock,
+              }}
+            />
+          ),
           children: [
             {
               index: true,
@@ -71,6 +80,41 @@ describe('ProductCart', () => {
     expect(
       screen.getByRole('button', { name: /add to cart/i }),
     ).toBeInTheDocument();
+  });
+
+  it('has add-to-wishlist toggler', () => {
+    render(<RoutedProductCard />);
+    expect(
+      screen.getByRole('checkbox', { name: /add to wishlist/i }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Add-to-wishlist toggler', () => {
+  it('calls the wishlist updata on toggle', async () => {
+    const item = itemMock();
+    const user = userEvent.setup();
+    render(<RoutedProductCard />);
+    await user.click(
+      screen.getByRole('checkbox', { name: /add to wishlist/i }),
+    );
+    expect(updateWishlistMock).toHaveBeenCalledTimes(1);
+    expect(updateWishlistMock).toHaveBeenCalledWith(item);
+  });
+
+  it('is not checked if the item not in the wishlist', () => {
+    render(<RoutedProductCard />);
+    expect(
+      screen.getByRole('checkbox', { name: /add to wishlist/i }),
+    ).not.toBeChecked();
+  });
+
+  it('is checked if the item in the wishlist', () => {
+    wishlistMock.mockImplementationOnce(() => [itemMock()]);
+    render(<RoutedProductCard />);
+    expect(
+      screen.getByRole('checkbox', { name: /add to wishlist/i }),
+    ).toBeChecked();
   });
 });
 

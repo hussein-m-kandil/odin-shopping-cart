@@ -10,7 +10,7 @@ import {
   useOutletContext,
 } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import App, { SIGNOUT_PATH, CART_PATH } from './App';
+import App, { SIGNOUT_PATH, CART_PATH, WISHLIST_PATH } from './App';
 import Products from './components/Products/Products';
 
 const AUTH_DATA = { objectId: 'Fake id', 'user-token': 'Fake token' };
@@ -86,6 +86,7 @@ function PublicPageMock() {
           {SIGNIN_BTN_CONTENT}
         </button>
         <Link to={CART_PATH}>Cart</Link>
+        <Link to={WISHLIST_PATH}>Wishlist</Link>
       </h2>
       <Products items={items} />
     </>
@@ -95,6 +96,11 @@ function PublicPageMock() {
 function CartMock() {
   const { cart } = useOutletContext();
   return <Products items={cart} />;
+}
+
+function WishlistMock() {
+  const { wishlist } = useOutletContext();
+  return <Products items={wishlist} />;
 }
 
 function RoutedApp() {
@@ -118,6 +124,7 @@ function RoutedApp() {
             },
             { index: true, element: <PublicPageMock /> },
             { path: CART_PATH, element: <CartMock /> },
+            { path: WISHLIST_PATH, element: <WishlistMock /> },
             { path: PRIVATE_PATH, element: <PrivatePageMock /> },
           ],
         },
@@ -133,6 +140,11 @@ vi.mock('./components/Navbar/Navbar', () => ({
 vi.mock('./components/Footer/Footer', () => ({
   default: () => <div>Footer</div>,
 }));
+
+// Just to avoid error occur because of React-Router's 'ScrollRestoration'
+window.scroll = vi.fn();
+window.scrollBy = vi.fn();
+window.scrollTo = vi.fn();
 
 afterEach(() => vi.resetAllMocks());
 
@@ -237,5 +249,29 @@ describe('App Cart', () => {
     ).toHaveLength(0);
     expect(screen.queryAllByLabelText(/increment/i)).toHaveLength(0);
     expect(screen.queryAllByLabelText(/decrement/i)).toHaveLength(0);
+  });
+});
+
+describe('App Wishlist', () => {
+  it('gets updated correctly', async () => {
+    const user = userEvent.setup();
+    render(<RoutedApp />);
+    await user.click(
+      screen.getAllByRole('checkbox', { name: /add to wishlist/i })[0],
+    );
+    await user.click(screen.getByRole('link', { name: 'Wishlist' }));
+    expect(
+      screen.getByRole('checkbox', { name: /add to wishlist/i }),
+    ).toBeChecked();
+    expect(
+      screen.getByText(new RegExp(items[0].product.title)),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole('checkbox', { name: /add to wishlist/i }),
+    );
+    expect(
+      screen.queryByRole('checkbox', { name: /add to wishlist/i }),
+    ).toBeNull();
+    expect(screen.queryByText(new RegExp(items[0].product.title))).toBeNull();
   });
 });

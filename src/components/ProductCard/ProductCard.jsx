@@ -1,4 +1,4 @@
-import { BsStarHalf } from 'react-icons/bs';
+import { BsHeartFill, BsStarHalf } from 'react-icons/bs';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../Button/Button';
@@ -10,7 +10,12 @@ function ProductCard({ item }) {
 
   const { product } = item;
 
-  const { updateCart } = useOutletContext();
+  const { updateCart, wishlist, updateWishlist } = useOutletContext();
+
+  const inWishlist = Boolean(
+    wishlist.find((wishItem) => wishItem.product.id === product.id),
+  );
+  const heartColor = inWishlist ? 'text-red-700' : 'text-red-300';
 
   const updateQuantity = (updatedQuantity) => {
     if (updatedQuantity >= 0 && updatedQuantity <= Number.MAX_SAFE_INTEGER) {
@@ -53,17 +58,13 @@ function ProductCard({ item }) {
               {(product.price * (quantity || 1)).toFixed(2)}$
             </span>
           </div>
-          <div className="mt-2 font-semibold">
+          <div className="mt-2 font-semibold flex justify-between *:grow gap-2">
             {quantity < 1 ? (
-              <Button
-                type="button"
-                className="w-full"
-                onClick={() => updateQuantity(1)}
-              >
+              <Button type="button" onClick={() => updateQuantity(1)}>
                 Add to Cart
               </Button>
             ) : (
-              <div className="flex justify-between *:grow gap-2">
+              <>
                 <Button
                   type="button"
                   aria-label="decrement"
@@ -74,8 +75,8 @@ function ProductCard({ item }) {
                 <input
                   type="text"
                   value={quantity}
-                  name="quantity"
                   aria-label="quantity"
+                  id={`quantity-${product.id}`}
                   onChange={handleQuantityChange}
                   className="w-8 text-center focus:outline-1 outline-gray-400 border-1 border-gray-300 rounded-lg"
                 />
@@ -86,8 +87,21 @@ function ProductCard({ item }) {
                 >
                   <BiPlus className="stroke-2 inline" />
                 </Button>
-              </div>
+              </>
             )}
+            <label className="inline-block min-w-1/4 aspect-2/1 relative text-[1.75rem] overflow-hidden">
+              <input
+                className="appearance-none"
+                type="checkbox"
+                aria-label="Add to wishlist"
+                id={`add-to-wishlist-${product.id}`}
+                onChange={() => updateWishlist(item)}
+                checked={inWishlist}
+              />
+              <BsHeartFill
+                className={`inline absolute top-1/2 left-1/2 -translate-1/2 opacity-75 ${heartColor}`}
+              />
+            </label>
           </div>
         </div>
       </div>

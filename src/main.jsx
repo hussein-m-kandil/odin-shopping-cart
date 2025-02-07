@@ -4,17 +4,19 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { authFormAction } from './components/AuthForm/auth-form-utils';
 import App, {
+  CART_PATH,
   SIGNUP_PATH,
   SIGNIN_PATH,
   SIGNOUT_PATH,
   CHECKOUT_PATH,
-  CART_PATH,
+  WISHLIST_PATH,
 } from './App';
+import Wishlist from './components/Wishlist/Wishlist';
 import AuthForm from './components/AuthForm/AuthForm';
 import Guard from './components/AuthGuard/AuthGuard';
-import PageTitle from './PageTitle';
 import Home from './components/Home/Home';
 import Cart from './components/Cart/Cart';
+import PageTitle from './PageTitle';
 
 // TODO: Add error element and not-found route
 
@@ -38,6 +40,15 @@ const router = createBrowserRouter([
           <>
             <PageTitle pageTitle="Cart" />
             <Cart />
+          </>
+        ),
+      },
+      {
+        path: WISHLIST_PATH,
+        element: (
+          <>
+            <PageTitle pageTitle="Wishlist" />
+            <Wishlist />
           </>
         ),
       },

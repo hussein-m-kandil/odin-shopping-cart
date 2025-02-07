@@ -63,7 +63,9 @@ function RoutedProducts() {
       router={createMemoryRouter([
         {
           path: '/',
-          element: <Outlet context={{ updateCart: updateCartMock }} />,
+          element: (
+            <Outlet context={{ wishlist: [], updateCart: updateCartMock }} />
+          ),
           children: [
             {
               index: true,
