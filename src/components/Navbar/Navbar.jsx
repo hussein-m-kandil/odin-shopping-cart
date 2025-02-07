@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useMatch } from 'react-router-dom';
 import { BsHeartFill, BsCart4 as ShoppingCart } from 'react-icons/bs';
-import { FaInstagram as Instagram } from 'react-icons/fa6';
-import { FaLinkedin as LinkedIn } from 'react-icons/fa6';
-import { FaFacebook as Facebook } from 'react-icons/fa6';
-import { FaYoutube as Youtube } from 'react-icons/fa6';
-import { FaTwitter as Twitter } from 'react-icons/fa6';
-import { FaTiktok as Tiktok } from 'react-icons/fa6';
 import { FaBars as Bars } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import {
@@ -17,34 +11,6 @@ import {
   SIGNOUT_PATH,
   WISHLIST_PATH,
 } from '../../App';
-
-const socialData = [
-  { name: 'Instagram', icon: <Instagram />, url: 'https://www.instagram.com/' },
-  { name: 'Facebook', icon: <Facebook />, url: 'https://www.facebook.com/' },
-  { name: 'Tiktok', icon: <Tiktok />, url: 'https://www.tiktok.com/' },
-  { name: 'Twitter', icon: <Twitter />, url: 'https://www.twitter.com/' },
-  { name: 'LinkedIn', icon: <LinkedIn />, url: 'https://www.linkedin.com/' },
-  { name: 'Youtube', icon: <Youtube />, url: 'https://www.youtube.com/' },
-];
-
-function Social({ url, name, icon }) {
-  return (
-    <a
-      href={url}
-      aria-label={`Visit ${name} in new window`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {icon}
-    </a>
-  );
-}
-
-Social.propTypes = {
-  url: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  icon: PropTypes.element.isRequired,
-};
 
 function Navbar({
   authenticated = false,
@@ -154,13 +120,6 @@ function Navbar({
                   </span>
                 </span>
               </NavLink>
-            </li>
-            <li>
-              <div className="flex flex-wrap gap-2 text-xs max-sm:mx-auto max-sm:my-4 max-sm:w-fit">
-                {socialData.map((data) => (
-                  <Social key={data.url} {...data} />
-                ))}
-              </div>
             </li>
             {authenticated ? (
               <li>
