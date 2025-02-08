@@ -4,6 +4,7 @@ import {
   useFetcher,
   Navigate,
   useOutletContext,
+  Link,
 } from 'react-router-dom';
 import {
   ENTRIES_NAMES,
@@ -85,6 +86,17 @@ function AuthForm() {
       <h1 id="form-label" className="font-bold mb-4">
         {title}
       </h1>
+      <p className="text-blue-700 text-center text-sm font-light underline active:text-black visited:text-purple-700">
+        {signInPath ? (
+          <Link to={SIGNUP_PATH} replace={true}>
+            Sign up if you don&apos;t have an account
+          </Link>
+        ) : (
+          <Link to={SIGNIN_PATH} replace={true}>
+            Sign in if you already have an account
+          </Link>
+        )}
+      </p>
       {errorMessage && (
         <div
           role="alert"
