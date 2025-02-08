@@ -3,7 +3,7 @@ import ProductCard, { ItemType } from '../ProductCard/ProductCard';
 
 function Products({ items }) {
   return (
-    <div className="container flex flex-wrap w-full px-2">
+    <div className="container mx-auto flex flex-wrap w-full px-2">
       {items.map((item) => (
         <ProductCard key={item.product?.id || item.id} item={item} />
       ))}
