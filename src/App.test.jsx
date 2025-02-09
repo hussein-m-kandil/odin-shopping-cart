@@ -10,8 +10,43 @@ import {
   useOutletContext,
 } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import App, { SIGNOUT_PATH, CART_PATH, WISHLIST_PATH } from './App';
+// import App, { SIGNOUT_PATH, CART_PATH, WISHLIST_PATH } from './App';
 import Products from './components/Products/Products';
+
+vi.mock('./components/Navbar/Navbar', () => ({
+  default: () => <div>Navbar</div>,
+}));
+
+vi.mock('./components/Footer/Footer', () => ({
+  default: () => <div>Footer</div>,
+}));
+
+// Just to avoid error occur because of React-Router's 'ScrollRestoration'
+window.scroll = vi.fn();
+window.scrollBy = vi.fn();
+window.scrollTo = vi.fn();
+
+const authServiceMock = () =>
+  new Promise((resolve) => setTimeout(() => resolve({ data: true }), 0));
+
+vi.mock('./services/auth', () => {
+  return {
+    postSignin: authServiceMock,
+    postSignup: authServiceMock,
+    getSignout: authServiceMock,
+    deleteUser: authServiceMock,
+    getSigninValidation: authServiceMock,
+  };
+});
+
+afterEach(() => vi.resetAllMocks());
+
+const {
+  default: App,
+  SIGNOUT_PATH,
+  CART_PATH,
+  WISHLIST_PATH,
+} = await import('./App');
 
 const AUTH_DATA = { objectId: 'Fake id', 'user-token': 'Fake token' };
 const PRIVATE_CONTENT = 'Private content';
@@ -20,6 +55,7 @@ const PRIVATE_PATH = '/private';
 const PUBLIC_PATH = '/';
 const SIGNIN_BTN_CONTENT = 'Sign in';
 const SIGNOUT_BTN_CONTENT = 'Sign out';
+const DEL_USER_BTN_CONTENT = 'Delete user';
 
 const items = [
   {
@@ -58,7 +94,7 @@ const items = [
 ];
 
 function PrivatePageMock() {
-  const { authenticated } = useOutletContext();
+  const { authenticated, deleteUser } = useOutletContext();
   const navigate = useNavigate();
   return !authenticated ? (
     <Navigate to={PUBLIC_PATH} replace={true} />
@@ -68,6 +104,9 @@ function PrivatePageMock() {
         {PRIVATE_CONTENT}
         <button type="button" onClick={() => navigate(SIGNOUT_PATH)}>
           {SIGNOUT_BTN_CONTENT}
+        </button>
+        <button type="button" onClick={() => deleteUser()}>
+          {DEL_USER_BTN_CONTENT}
         </button>
       </h2>
     </>
@@ -133,21 +172,6 @@ function RoutedApp() {
   );
 }
 
-vi.mock('./components/Navbar/Navbar', () => ({
-  default: () => <div>Navbar</div>,
-}));
-
-vi.mock('./components/Footer/Footer', () => ({
-  default: () => <div>Footer</div>,
-}));
-
-// Just to avoid error occur because of React-Router's 'ScrollRestoration'
-window.scroll = vi.fn();
-window.scrollBy = vi.fn();
-window.scrollTo = vi.fn();
-
-afterEach(() => vi.resetAllMocks());
-
 describe('App', () => {
   it('shows authenticated-user content only after calling authenticate from child', async () => {
     const user = userEvent.setup();
@@ -167,6 +191,18 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: SIGNOUT_BTN_CONTENT }));
     expect(screen.queryByText(PRIVATE_CONTENT)).toBeNull();
     expect(screen.getByText(PUBLIC_CONTENT)).toBeInTheDocument();
+  });
+
+  it('redirects to public route after deleting the user', async () => {
+    const user = userEvent.setup();
+    render(<RoutedApp />);
+    await user.click(screen.getByRole('button', { name: SIGNIN_BTN_CONTENT }));
+    expect(screen.getByText(PRIVATE_CONTENT)).toBeInTheDocument();
+    await user.click(
+      screen.getByRole('button', { name: DEL_USER_BTN_CONTENT }),
+    );
+    expect(screen.queryByText(PRIVATE_CONTENT)).toBeNull();
+    expect(await screen.findByText(PUBLIC_CONTENT)).toBeInTheDocument();
   });
 });
 

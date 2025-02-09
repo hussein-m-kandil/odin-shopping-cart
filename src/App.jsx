@@ -1,7 +1,7 @@
 import { Slide, toast, ToastContainer } from 'react-toastify';
-import { getSigninValidation, getSignout } from './services/auth';
 import { Outlet, ScrollRestoration, useMatch } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import * as authServices from './services/auth';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import Loader from './Loader';
@@ -11,6 +11,7 @@ export const CART_PATH = '/cart';
 export const BRANDS_PATH = '/brands';
 export const SIGNUP_PATH = '/signup';
 export const SIGNIN_PATH = '/signin';
+export const PROFILE_PATH = '/profile';
 export const SIGNOUT_PATH = '/signout';
 export const WISHLIST_PATH = '/wishlist';
 export const PRODUCTS_PATH = '/products';
@@ -37,7 +38,8 @@ function App() {
 
   useEffect(() => {
     if (parsedAuthData) {
-      getSigninValidation(parsedAuthData['user-token'])
+      authServices
+        .getSigninValidation(parsedAuthData['user-token'])
         .then(({ data, error }) => {
           if (data === true) return setErrorMessage(null);
           throw error || new Error('Authentication failed!');
@@ -66,7 +68,7 @@ function App() {
       } finally {
         setAuthData(null);
         // Just send a sign out request, no need to process the response!
-        getSignout(authData['user-token']);
+        authServices.getSignout(authData['user-token']);
       }
     }
   }, [signoutPathMatch, authData]);
@@ -88,6 +90,22 @@ function App() {
     } catch {
       setErrorMessage('Storing authentication data failed!');
     }
+  };
+
+  const deleteUser = () => {
+    authServices
+      .deleteUser(authData.objectId)
+      .then(({ data }) => {
+        if (!data) throw Error('Account Deletion Failed!');
+        try {
+          localStorage.removeItem(AUTH_DATA_KEY);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setAuthData(null);
+        }
+      })
+      .catch((error) => setErrorMessage(error.message));
   };
 
   const authenticated = Boolean(authData);
@@ -142,6 +160,7 @@ function App() {
                 cart,
                 wishlist,
                 authData,
+                deleteUser,
                 updateCart,
                 authenticate,
                 authenticated,

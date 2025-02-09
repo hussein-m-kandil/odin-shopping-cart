@@ -10,6 +10,7 @@ import App, {
   SIGNOUT_PATH,
   CHECKOUT_PATH,
   WISHLIST_PATH,
+  PROFILE_PATH,
 } from './App';
 import Wishlist from './components/Wishlist/Wishlist';
 import AuthForm from './components/AuthForm/AuthForm';
@@ -17,6 +18,7 @@ import Guard from './components/AuthGuard/AuthGuard';
 import Home from './components/Home/Home';
 import Cart from './components/Cart/Cart';
 import PageTitle from './PageTitle';
+import Profile from './components/Profile/Profile';
 
 // TODO: Add error element and not-found route
 
@@ -75,6 +77,7 @@ const router = createBrowserRouter([
       {
         element: <Guard authPath={SIGNIN_PATH} />,
         children: [
+          { path: PROFILE_PATH, element: <Profile /> },
           {
             path: SIGNOUT_PATH,
             element: (
