@@ -2,9 +2,13 @@ import PropTypes from 'prop-types';
 import { Outlet, Navigate, useOutletContext } from 'react-router-dom';
 
 function Guard({ authPath }) {
-  const { authenticated } = useOutletContext();
+  const { authenticated, ...contextEntries } = useOutletContext();
 
-  return authenticated ? <Outlet /> : <Navigate to={authPath} replace={true} />;
+  return authenticated ? (
+    <Outlet context={{ authenticated, ...contextEntries }} />
+  ) : (
+    <Navigate to={authPath} replace={true} />
+  );
 }
 
 Guard.propTypes = { authPath: PropTypes.string.isRequired };

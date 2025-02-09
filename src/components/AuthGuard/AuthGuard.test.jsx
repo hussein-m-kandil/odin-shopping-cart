@@ -1,14 +1,24 @@
 import '@testing-library/jest-dom/vitest';
-import { createMemoryRouter, Outlet, RouterProvider } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  Outlet,
+  RouterProvider,
+  useOutletContext,
+} from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import Guard from './AuthGuard';
 import PropTypes from 'prop-types';
 
 const publicContent = 'Public';
 const privateContent = 'Private';
+
+const PrivateComponentMock = vi.fn(() => {
+  return <div>{privateContent}</div>;
+});
+
 const publicRoute = { index: true, element: <div>{publicContent}</div> };
-const privateRoute = { path: '/private', element: <div>{privateContent}</div> };
+const privateRoute = { path: '/private', element: <PrivateComponentMock /> };
 
 function RoutedGuard({
   context,
@@ -57,5 +67,15 @@ describe('Guard', () => {
     render(<RoutedGuard context={{ authenticated: true }} />);
     expect(screen.queryByText(publicContent)).toBeNull();
     expect(screen.getByText(privateContent)).toBeInTheDocument();
+  });
+
+  it('passes its parent outlet context to its children', () => {
+    PrivateComponentMock.mockImplementationOnce(() => {
+      const { authData } = useOutletContext();
+      return <div>{authData.name}</div>;
+    });
+    const authData = { name: 'Superman' };
+    render(<RoutedGuard context={{ authenticated: true, authData }} />);
+    expect(screen.getByText(authData.name)).toBeInTheDocument();
   });
 });
