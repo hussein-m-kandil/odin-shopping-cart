@@ -11,3 +11,9 @@
 body {
   font-family: 'Encode Sans Expanded', sans-serif;
 }
+
+*,
+*::after,
+*::before {
+  outline-color: var(--color-orange-400);
+}
