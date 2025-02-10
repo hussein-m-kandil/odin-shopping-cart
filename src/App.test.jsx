@@ -10,7 +10,6 @@ import {
   useOutletContext,
 } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-// import App, { SIGNOUT_PATH, CART_PATH, WISHLIST_PATH } from './App';
 import Products from './components/Products/Products';
 
 vi.mock('./components/Navbar/Navbar', () => ({

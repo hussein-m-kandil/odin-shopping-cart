@@ -8,17 +8,19 @@ import App, {
   SIGNUP_PATH,
   SIGNIN_PATH,
   SIGNOUT_PATH,
+  PROFILE_PATH,
   CHECKOUT_PATH,
   WISHLIST_PATH,
-  PROFILE_PATH,
+  CATEGORIES_PATH,
 } from './App';
+import Categories from './components/Categories/Categories';
 import Wishlist from './components/Wishlist/Wishlist';
 import AuthForm from './components/AuthForm/AuthForm';
 import Guard from './components/AuthGuard/AuthGuard';
+import Profile from './components/Profile/Profile';
 import Home from './components/Home/Home';
 import Cart from './components/Cart/Cart';
 import PageTitle from './PageTitle';
-import Profile from './components/Profile/Profile';
 
 // TODO: Add error element and not-found route
 
@@ -51,6 +53,15 @@ const router = createBrowserRouter([
           <>
             <PageTitle pageTitle="Wishlist" />
             <Wishlist />
+          </>
+        ),
+      },
+      {
+        path: CATEGORIES_PATH,
+        element: (
+          <>
+            <PageTitle pageTitle="Categories" />
+            <Categories />
           </>
         ),
       },

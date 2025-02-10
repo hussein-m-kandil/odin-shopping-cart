@@ -16,6 +16,7 @@ export const SIGNOUT_PATH = '/signout';
 export const WISHLIST_PATH = '/wishlist';
 export const PRODUCTS_PATH = '/products';
 export const CHECKOUT_PATH = '/checkout';
+export const CATEGORY_PATH = '/category';
 export const CATEGORIES_PATH = '/categories';
 const AUTH_DATA_KEY = 'seco_seco';
 
