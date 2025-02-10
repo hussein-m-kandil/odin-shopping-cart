@@ -68,7 +68,7 @@ function Footer() {
               type="email"
               id={emailInputId}
               placeholder="Enter your email"
-              className="bg-white p-2 border-gray-300 border-1 rounded-lg grow focus:outline-gray-400 disabled:opacity-50"
+              className="min-w-12 bg-white p-2 border-gray-300 border-1 rounded-lg focus:outline-gray-400 disabled:opacity-50"
             />
             <Button className="px-4 py-2 sm:max-w-32">Get App</Button>
           </div>
