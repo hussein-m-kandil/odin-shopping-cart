@@ -145,9 +145,9 @@ function App() {
       <div className="min-h-screen flex flex-col justify-center items-center">
         <header>
           <Navbar
-            authenticated={authenticated}
-            wishlistItemsCount={wishlist.length}
-            cartItemsCount={cart.reduce((sum, { quantity: q }) => sum + q, 0)}
+            authData={authData}
+            wishlistLength={wishlist.length}
+            cartLength={cart.reduce((sum, { quantity: q }) => sum + q, 0)}
           />
           <ToastContainer />
         </header>
