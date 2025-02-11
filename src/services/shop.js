@@ -14,6 +14,6 @@ export function getAllCategories() {
   return get(import.meta.env.VITE_SHOP_ALL_CATEGORIES);
 }
 
-export function getCategory() {
-  return get(import.meta.env.VITE_SHOP_CATEGORY);
+export function getCategory(category) {
+  return get(`${import.meta.env.VITE_SHOP_CATEGORY}/${category}`);
 }
