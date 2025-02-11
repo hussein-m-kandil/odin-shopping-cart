@@ -152,7 +152,7 @@ function App() {
           />
           <ToastContainer />
         </header>
-        <main className="w-full h-full">
+        <main className="container mx-auto">
           {loading ? (
             <Loader />
           ) : (
