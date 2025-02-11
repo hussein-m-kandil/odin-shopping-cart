@@ -69,18 +69,21 @@ function RoutedCart() {
 }
 
 describe('Cart', () => {
-  it('renders a wishlist heading', () => {
+  it('has a heading', () => {
     render(<RoutedCart />);
     expect(screen.getByRole('heading', { name: /cart/i })).toBeInTheDocument();
   });
 
-  it('renders empty wishlist message if that is true', () => {
-    cartMock.mockImplementationOnce(() => []);
+  it('has the items count', () => {
+    const cart = cartMock();
+    const itemsCount = cart.reduce((sum, { quantity }) => sum + quantity, 0);
     render(<RoutedCart />);
-    expect(screen.getByText(/empty/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(`${itemsCount}.*item`, 'i')),
+    ).toBeInTheDocument();
   });
 
-  it('renders all products in the cart', () => {
+  it('has all products in the cart', () => {
     const cart = cartMock();
     render(<RoutedCart />);
     for (const { product, quantity } of cart) {
@@ -95,7 +98,7 @@ describe('Cart', () => {
     }
   });
 
-  it('renders the total cost rounded to fixed 2 decimal points', () => {
+  it('has the total cost rounded to fixed 2 decimal points', () => {
     const cart = cartMock();
     const totalCost = cart
       .reduce((total, { product, quantity }) => {
@@ -106,7 +109,7 @@ describe('Cart', () => {
     expect(screen.getByText(new RegExp(`${totalCost}`))).toBeInTheDocument();
   });
 
-  it('renders checkout button', () => {
+  it('has checkout button', () => {
     render(<RoutedCart />);
     expect(
       screen.getByRole('button', { name: /checkout/i }),
