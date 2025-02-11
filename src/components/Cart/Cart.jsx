@@ -4,7 +4,7 @@ import Products from '../Products/Products';
 import Button from '../Button/Button';
 
 function Cart() {
-  const { cart } = useOutletContext();
+  const { cart, checkout } = useOutletContext();
 
   const totalCost = cart
     .reduce((total, { product, quantity }) => {
@@ -20,14 +20,14 @@ function Cart() {
       <p className="text-center text-gray-700 font-light">{`${itemsCount} item${itemsCount === 1 ? '' : 's'}`}</p>
       {cart.length > 0 && (
         <>
-          <div className="container p-4">
-            <p className="flex gap-4 items-center justify-center w-full">
-              <span>
-                The total cost is{' '}
-                <span className="font-bold">{totalCost}$</span>
-              </span>
-              <Button type="button">Checkout</Button>
-            </p>
+          <div className="text-center mb-4 mt-6">
+            <Button
+              type="button"
+              onClick={checkout}
+              className="font-semibold text-sm"
+            >
+              Checkout and Pay <span className="font-bold">{totalCost}$</span>
+            </Button>
           </div>
           <Products items={cart} />
         </>

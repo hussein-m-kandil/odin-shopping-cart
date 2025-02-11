@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import Cart from './Cart';
+import userEvent from '@testing-library/user-event';
 
 const cartMock = vi.fn(() => [
   {
@@ -40,13 +41,19 @@ const cartMock = vi.fn(() => [
 ]);
 
 const updateCartMock = vi.fn();
+const checkoutMock = vi.fn();
 
 afterEach(() => vi.resetAllMocks());
 
 function AppMock() {
   return (
     <Outlet
-      context={{ wishlist: [], cart: cartMock(), updateCart: updateCartMock }}
+      context={{
+        wishlist: [],
+        cart: cartMock(),
+        checkout: checkoutMock,
+        updateCart: updateCartMock,
+      }}
     />
   );
 }
@@ -114,5 +121,12 @@ describe('Cart', () => {
     expect(
       screen.getByRole('button', { name: /checkout/i }),
     ).toBeInTheDocument();
+  });
+
+  it('calls checkout function on click the checkout button', async () => {
+    const user = userEvent.setup();
+    render(<RoutedCart />);
+    await user.click(screen.getByRole('button', { name: /checkout/i }));
+    expect(checkoutMock).toHaveBeenCalledTimes(1);
   });
 });

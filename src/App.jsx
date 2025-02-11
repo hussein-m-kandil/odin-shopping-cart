@@ -1,5 +1,10 @@
 import { Slide, toast, ToastContainer } from 'react-toastify';
-import { Outlet, ScrollRestoration, useMatch } from 'react-router-dom';
+import {
+  Outlet,
+  ScrollRestoration,
+  useMatch,
+  useNavigate,
+} from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import * as authServices from './services/auth';
 import Navbar from './components/Navbar/Navbar';
@@ -8,14 +13,11 @@ import Loader from './Loader';
 
 export const HOME_PATH = '/';
 export const CART_PATH = '/cart';
-export const BRANDS_PATH = '/brands';
 export const SIGNUP_PATH = '/signup';
 export const SIGNIN_PATH = '/signin';
 export const PROFILE_PATH = '/profile';
 export const SIGNOUT_PATH = '/signout';
 export const WISHLIST_PATH = '/wishlist';
-export const PRODUCTS_PATH = '/products';
-export const CHECKOUT_PATH = '/checkout';
 export const CATEGORY_PATH = '/category';
 export const CATEGORIES_PATH = '/categories';
 const AUTH_DATA_KEY = 'seco_seco';
@@ -109,8 +111,6 @@ function App() {
       .catch((error) => setErrorMessage(error.message));
   };
 
-  const authenticated = Boolean(authData);
-
   const updateCart = (product, quantity) => {
     if (quantity > 0) {
       let existedItem = false;
@@ -140,6 +140,15 @@ function App() {
     }
   };
 
+  const navigate = useNavigate();
+
+  const checkout = () => {
+    if (authData) {
+      setCart([]);
+      navigate(HOME_PATH);
+    } else navigate(SIGNIN_PATH);
+  };
+
   return (
     <>
       <ScrollRestoration />
@@ -159,13 +168,14 @@ function App() {
             <Outlet
               context={{
                 cart,
+                checkout,
                 wishlist,
                 authData,
                 deleteUser,
                 updateCart,
                 authenticate,
-                authenticated,
                 updateWishlist,
+                authenticated: Boolean(authData),
               }}
             />
           )}

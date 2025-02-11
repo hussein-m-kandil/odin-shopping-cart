@@ -9,7 +9,6 @@ import App, {
   SIGNIN_PATH,
   SIGNOUT_PATH,
   PROFILE_PATH,
-  CHECKOUT_PATH,
   WISHLIST_PATH,
   CATEGORY_PATH,
   CATEGORIES_PATH,
@@ -108,15 +107,6 @@ const router = createBrowserRouter([
               <>
                 <PageTitle pageTitle="Sign out" />
                 <App />
-              </>
-            ),
-          },
-          {
-            path: CHECKOUT_PATH,
-            element: (
-              <>
-                <PageTitle pageTitle="Checkout" />
-                <h2>Checkout</h2>
               </>
             ),
           },

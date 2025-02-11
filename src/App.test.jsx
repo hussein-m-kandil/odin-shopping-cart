@@ -43,12 +43,14 @@ afterEach(() => vi.resetAllMocks());
 const {
   default: App,
   SIGNOUT_PATH,
+  SIGNIN_PATH,
   CART_PATH,
   WISHLIST_PATH,
 } = await import('./App');
 
 const AUTH_DATA = { objectId: 'Fake id', 'user-token': 'Fake token' };
 const PRIVATE_CONTENT = 'Private content';
+const SIGNIN_CONTENT = 'Sign in content';
 const PUBLIC_CONTENT = 'Public content';
 const PRIVATE_PATH = '/private';
 const PUBLIC_PATH = '/';
@@ -92,6 +94,15 @@ const items = [
   },
 ];
 
+function NavLinksMock() {
+  return (
+    <>
+      <Link to={CART_PATH}>Cart</Link>
+      <Link to={WISHLIST_PATH}>Wishlist</Link>
+    </>
+  );
+}
+
 function PrivatePageMock() {
   const { authenticated, deleteUser } = useOutletContext();
   const navigate = useNavigate();
@@ -108,6 +119,8 @@ function PrivatePageMock() {
           {DEL_USER_BTN_CONTENT}
         </button>
       </h2>
+      <NavLinksMock />
+      <Products items={items} />
     </>
   );
 }
@@ -123,17 +136,21 @@ function PublicPageMock() {
         <button type="button" onClick={() => authenticate(AUTH_DATA)}>
           {SIGNIN_BTN_CONTENT}
         </button>
-        <Link to={CART_PATH}>Cart</Link>
-        <Link to={WISHLIST_PATH}>Wishlist</Link>
       </h2>
+      <NavLinksMock />
       <Products items={items} />
     </>
   );
 }
 
 function CartMock() {
-  const { cart } = useOutletContext();
-  return <Products items={cart} />;
+  const { cart, checkout } = useOutletContext();
+  return (
+    <>
+      {cart.length > 0 && <button onClick={checkout}>Checkout</button>}
+      <Products items={cart} />
+    </>
+  );
 }
 
 function WishlistMock() {
@@ -164,6 +181,15 @@ function RoutedApp() {
             { path: CART_PATH, element: <CartMock /> },
             { path: WISHLIST_PATH, element: <WishlistMock /> },
             { path: PRIVATE_PATH, element: <PrivatePageMock /> },
+            {
+              path: SIGNIN_PATH,
+              element: (
+                <>
+                  <NavLinksMock />
+                  <div>{SIGNIN_CONTENT}</div>
+                </>
+              ),
+            },
           ],
         },
       ])}
@@ -284,6 +310,35 @@ describe('App Cart', () => {
     ).toHaveLength(0);
     expect(screen.queryAllByLabelText(/increment/i)).toHaveLength(0);
     expect(screen.queryAllByLabelText(/decrement/i)).toHaveLength(0);
+  });
+
+  it('does empty the cart when an authenticated user clicks the checkout button', async () => {
+    const user = userEvent.setup();
+    render(<RoutedApp />);
+    await user.click(screen.getByRole('button', { name: SIGNIN_BTN_CONTENT }));
+    const addBtns = await screen.findAllByRole('button', {
+      name: /add to cart/i,
+    });
+    for (const btn of addBtns) await user.click(btn);
+    await user.click(screen.getByRole('link', { name: /cart/i }));
+    expect(screen.queryAllByLabelText(/increment/i)).toHaveLength(items.length);
+    await user.click(screen.getByRole('button', { name: /checkout/i }));
+    expect(screen.queryAllByLabelText(/increment/i)).toHaveLength(0);
+  });
+
+  it('redirects to the sign-in route when an unauthenticated user clicks the checkout button', async () => {
+    const user = userEvent.setup();
+    render(<RoutedApp />);
+    const addBtns = await screen.findAllByRole('button', {
+      name: /add to cart/i,
+    });
+    for (const btn of addBtns) await user.click(btn);
+    await user.click(screen.getByRole('link', { name: /cart/i }));
+    expect(screen.queryAllByLabelText(/increment/i)).toHaveLength(items.length);
+    await user.click(screen.getByRole('button', { name: /checkout/i }));
+    expect(screen.getByText(SIGNIN_CONTENT)).toBeInTheDocument();
+    await user.click(screen.getByRole('link', { name: /cart/i }));
+    expect(screen.queryAllByLabelText(/increment/i)).toHaveLength(items.length);
   });
 });
 
