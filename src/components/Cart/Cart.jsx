@@ -16,8 +16,9 @@ function Cart() {
 
   return (
     <>
-      <PageHeadline>Cart</PageHeadline>
-      <p className="text-center text-gray-700 font-light">{`${itemsCount} item${itemsCount === 1 ? '' : 's'}`}</p>
+      <PageHeadline>
+        Your Cart Has{` ${itemsCount} Item${itemsCount === 1 ? '' : 's'}`}
+      </PageHeadline>
       {cart.length > 0 && (
         <>
           <div className="text-center mb-4 mt-6">
