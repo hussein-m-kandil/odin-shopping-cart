@@ -1,7 +1,7 @@
 import './index.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 import { authFormAction } from './components/AuthForm/auth-form-utils';
 import App, {
   CART_PATH,
@@ -22,13 +22,26 @@ import Profile from './components/Profile/Profile';
 import Home from './components/Home/Home';
 import Cart from './components/Cart/Cart';
 import PageTitle from './PageTitle';
-
-// TODO: Add error element and not-found route
+import notFoundImg from './assets/images/not-found.svg';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    ErrorBoundary: () => {
+      return (
+        <div className="h-screen flex flex-col justify-center text-center">
+          <p className="text-xl font-bold">Sorry, something went wrong!</p>
+          <Link
+            to="/"
+            replace={true}
+            className="text-blue-700 underline visited:text-purple-700 text-sm"
+          >
+            Back to Home
+          </Link>
+        </div>
+      );
+    },
     children: [
       {
         index: true,
@@ -108,6 +121,12 @@ const router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        path: '*',
+        Component: () => (
+          <img src={notFoundImg} alt="Not Found" className="mx-auto" />
+        ),
       },
     ],
   },
