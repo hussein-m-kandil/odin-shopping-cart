@@ -3,6 +3,7 @@ import { Link, useOutletContext } from 'react-router-dom';
 import ComboInput from '../ComboInput/ComboInput';
 import Button from '../Button/Button';
 import { SIGNOUT_PATH } from '../../App';
+import PageTitle from '../../PageTitle';
 
 function Profile() {
   const { authData, deleteUser } = useOutletContext();
@@ -28,7 +29,7 @@ function Profile() {
 
   return (
     <>
-      <title>{`${authData.name} - ${import.meta.env.VITE_APP_NAME}`}</title>
+      <PageTitle pageTitle={authData.name} />
       <section className="text-center mt-4 mb-8">
         <h2 className="font-bold text-xl">{authData.name}</h2>
         <p className="text-sm text-gray-700 font-light">{authData.email}</p>
