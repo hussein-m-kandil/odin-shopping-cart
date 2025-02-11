@@ -11,6 +11,7 @@ import App, {
   PROFILE_PATH,
   CHECKOUT_PATH,
   WISHLIST_PATH,
+  CATEGORY_PATH,
   CATEGORIES_PATH,
 } from './App';
 import Categories from './components/Categories/Categories';
@@ -31,12 +32,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <>
-            <PageTitle pageTitle="Home" />
-            <Home />
-          </>
-        ),
+        element: <Home key="home" />,
+      },
+      {
+        path: `${CATEGORY_PATH}/:category`,
+        element: <Home key="category" />,
       },
       {
         path: CART_PATH,

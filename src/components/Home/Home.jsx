@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react';
-import { getAllProducts } from '../../services/shop';
-import { useOutletContext } from 'react-router-dom';
+import { getAllProducts, getCategory } from '../../services/shop';
+import { useOutletContext, useParams } from 'react-router-dom';
 import Products from '../Products/Products';
 import Loader from '../../Loader';
+import PageHeadline from '../PageHeadline/PageHeadline';
+import capitalize from '../../utils/capitalize';
+import PageTitle from '../../PageTitle';
 
 function Home() {
   const [items, setItems] = useState(null);
   const { cart } = useOutletContext();
+  const { category } = useParams();
+
+  const capitalizedCategory = capitalize(category || '');
 
   useEffect(() => {
     if (!items) {
       let unmounted = false;
-      getAllProducts()
+      (category ? getCategory(category) : getAllProducts())
         .then(({ data, error }) => {
           if (!unmounted) {
             if (data) {
@@ -33,14 +39,20 @@ function Home() {
         });
       return () => (unmounted = true);
     }
-  }, [items, cart]);
+  }, [items, cart, category]);
 
-  return !items ? (
-    <Loader />
-  ) : items.length < 1 ? (
-    <p>Sorry, there are no products! Please visit us later.</p>
-  ) : (
-    <Products items={items} />
+  return (
+    <>
+      <PageTitle pageTitle={capitalizedCategory || 'Home'} />
+      <PageHeadline>{capitalizedCategory || 'All Categories'}</PageHeadline>
+      {!items ? (
+        <Loader />
+      ) : items.length < 1 ? (
+        <p>Sorry, there are no products! Please visit us later.</p>
+      ) : (
+        <Products items={items} />
+      )}
+    </>
   );
 }
 
