@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { get } from './shop';
+import * as shopService from './shop';
 import axios from 'axios';
 
 vi.mock('axios', () => {
@@ -28,11 +28,34 @@ describe('Shop Service', () => {
   });
 
   it('has a `get` function that calls Axios `get` method with the correct arguments', async () => {
-    const END_POINT = 'endpoint';
+    const END_POINT = '/endpoint';
     const url = `${BASE_URL}${END_POINT}`;
-    await expect(get(END_POINT)).resolves.not.toThrowError();
-    expect(END_POINT).toBeDefined();
+    await expect(shopService.get(END_POINT)).resolves.not.toThrowError();
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenLastCalledWith(url);
+    expect(axios.get).toHaveBeenCalledWith(url);
+  });
+
+  it('has a `getAllProducts` function that calls Axios `get` method with correct URL', async () => {
+    const END_POINT = import.meta.env.VITE_SHOP_ALL_PRODUCTS;
+    await expect(shopService.getAllProducts()).resolves.not.toThrowError();
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(`${BASE_URL}${END_POINT}`);
+  });
+
+  it('has a `getAllCategories` function that calls Axios `get` method with correct URL', async () => {
+    const END_POINT = import.meta.env.VITE_SHOP_ALL_CATEGORIES;
+    await expect(shopService.getAllCategories()).resolves.not.toThrowError();
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(`${BASE_URL}${END_POINT}`);
+  });
+
+  it('has a `getCategory` function that calls Axios `get` method with the given category', async () => {
+    const END_POINT = import.meta.env.VITE_SHOP_CATEGORY;
+    const CATEGORY = 'cat';
+    await expect(shopService.getCategory(CATEGORY)).resolves.not.toThrowError();
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(
+      `${BASE_URL}${END_POINT}/${CATEGORY}`,
+    );
   });
 });
