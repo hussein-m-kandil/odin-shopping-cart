@@ -1,9 +1,15 @@
-import { BsHeartFill, BsStarHalf } from 'react-icons/bs';
+import {
+  BsStar,
+  BsStarHalf,
+  BsStarFill,
+  BsHeartFill,
+  BsHeart,
+} from 'react-icons/bs';
+import { useOutletContext } from 'react-router-dom';
+import { BiMinus, BiPlus } from 'react-icons/bi';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../Button/Button';
-import { BiMinus, BiPlus } from 'react-icons/bi';
-import { useOutletContext } from 'react-router-dom';
 
 function ProductCard({ item }) {
   const [quantity, setQuantity] = useState(item.quantity);
@@ -15,7 +21,8 @@ function ProductCard({ item }) {
   const inWishlist = Boolean(
     wishlist.find((wishItem) => wishItem.product.id === product.id),
   );
-  const heartColor = inWishlist ? 'text-red-700' : 'text-red-300';
+
+  const rate = product.rating.rate;
 
   const updateQuantity = (updatedQuantity) => {
     if (updatedQuantity >= 0 && updatedQuantity <= Number.MAX_SAFE_INTEGER) {
@@ -50,15 +57,31 @@ function ProductCard({ item }) {
             {product.description}
           </p>
           <div className="flex flex-wrap">
-            <span>
-              <BsStarHalf className="fill-app-rating inline me-1" />
-              <span className="font-light">{product.rating.rate}</span>
+            <span className="flex gap-1">
+              <span className="text-app-rating">
+                {(rate >= 4 && <BsStarFill />) ||
+                  (rate >= 2 && <BsStarHalf />) || <BsStar />}
+              </span>
+              <span className="font-light">{rate}</span>
             </span>
             <span className="ms-auto font-semibold">
               {(product.price * (quantity || 1)).toFixed(2)}$
             </span>
           </div>
-          <div className="mt-2 font-semibold flex justify-between *:grow gap-2">
+          <div className="mt-2 font-semibold flex gap-2 justify-between *:grow">
+            <label className="inline-block max-w-1/4 min-w-[2rem] h-[2rem] text-[1.8rem] overflow-hidden relative">
+              <input
+                className="appearance-none"
+                type="checkbox"
+                aria-label="Add to wishlist"
+                id={`add-to-wishlist-${product.id}`}
+                onChange={() => updateWishlist(item)}
+                checked={inWishlist}
+              />
+              <span className="absolute top-1/2 left-1/2 -translate-1/2 opacity-70 text-red-700">
+                {inWishlist ? <BsHeartFill /> : <BsHeart />}
+              </span>
+            </label>
             {quantity < 1 ? (
               <Button type="button" onClick={() => updateQuantity(1)}>
                 Add to Cart
@@ -89,19 +112,6 @@ function ProductCard({ item }) {
                 </Button>
               </>
             )}
-            <label className="inline-block min-w-1/4 aspect-2/1 relative text-[1.75rem] overflow-hidden">
-              <input
-                className="appearance-none"
-                type="checkbox"
-                aria-label="Add to wishlist"
-                id={`add-to-wishlist-${product.id}`}
-                onChange={() => updateWishlist(item)}
-                checked={inWishlist}
-              />
-              <BsHeartFill
-                className={`inline absolute top-1/2 left-1/2 -translate-1/2 opacity-75 ${heartColor}`}
-              />
-            </label>
           </div>
         </div>
       </div>
