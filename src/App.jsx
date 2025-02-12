@@ -161,7 +161,7 @@ function App() {
           />
           <ToastContainer />
         </header>
-        <main className="container mx-auto">
+        <main className="container mx-auto mb-4">
           {loading ? (
             <Loader />
           ) : (
