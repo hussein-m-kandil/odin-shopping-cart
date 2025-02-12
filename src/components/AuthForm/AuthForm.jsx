@@ -12,10 +12,11 @@ import {
   signupEntriesData,
   validateFormData,
 } from './auth-form-utils';
-import ComboInput from '../ComboInput/ComboInput';
-import Button from '../Button/Button';
 import { BiLoaderAlt } from 'react-icons/bi';
 import { SIGNIN_PATH, SIGNUP_PATH } from '../../App';
+import Button from '../Button/Button';
+import ComboInput from '../ComboInput/ComboInput';
+import PageHeadline from '../PageHeadline/PageHeadline';
 
 const KNOWN_PATHS = [SIGNUP_PATH, SIGNIN_PATH];
 
@@ -83,16 +84,21 @@ function AuthForm() {
       aria-labelledby="form-label"
       className="mx-auto w-full max-w-xl flex flex-col justify-center px-4 py-8"
     >
-      <h1 id="form-label" className="font-bold">
+      <PageHeadline id="form-label">
         {title}
-      </h1>
-      <p className="mb-4 text-blue-700 text-center text-sm font-light underline active:text-black visited:text-purple-700">
-        {signInPath ? (
-          <Link to={SIGNUP_PATH}>Sign up if you do not have an account</Link>
-        ) : (
-          <Link to={SIGNIN_PATH}>Sign in if you already have an account</Link>
-        )}
-      </p>
+        <br />
+        <span className="text-blue-700 text-center text-sm font-light underline active:text-black visited:text-purple-700">
+          {signInPath ? (
+            <Link to={SIGNUP_PATH}>
+              or sign up if you do not have an account
+            </Link>
+          ) : (
+            <Link to={SIGNIN_PATH}>
+              or sign in if you already have an account
+            </Link>
+          )}
+        </span>
+      </PageHeadline>
       {errorMessage && (
         <div
           role="alert"
