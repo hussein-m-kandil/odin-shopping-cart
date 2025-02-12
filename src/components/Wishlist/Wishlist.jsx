@@ -1,17 +1,18 @@
 import { useOutletContext } from 'react-router-dom';
+import PageHeadline from '../PageHeadline/PageHeadline';
 import Products from '../Products/Products';
 
 function Wishlist() {
   const { wishlist } = useOutletContext();
 
+  const itemsCount = wishlist.length;
+
   return (
     <>
-      <h2>Wishlist</h2>
-      {wishlist.length < 1 ? (
-        <p>Your wishlist is empty</p>
-      ) : (
-        <Products items={wishlist} />
-      )}
+      <PageHeadline>
+        Your Wishlist Has{` ${itemsCount} item${itemsCount === 1 ? '' : 's'}`}
+      </PageHeadline>
+      {wishlist.length > 0 && <Products items={wishlist} />}
     </>
   );
 }

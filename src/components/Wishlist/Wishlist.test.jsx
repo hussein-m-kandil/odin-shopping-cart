@@ -54,20 +54,22 @@ function RoutedWishlist() {
 }
 
 describe('Wishlist', () => {
-  it('renders a wishlist heading', () => {
+  it('has a wishlist heading', () => {
     render(<RoutedWishlist />);
     expect(
       screen.getByRole('heading', { name: /wishlist/i }),
     ).toBeInTheDocument();
   });
 
-  it('renders empty wishlist message if that is true', () => {
-    wishlistMock.mockImplementationOnce(() => []);
+  it('has the count of items', () => {
+    const itemsCount = wishlistMock().length;
     render(<RoutedWishlist />);
-    expect(screen.getByText(/empty/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(`${itemsCount}.*item`, 'i')),
+    ).toBeInTheDocument();
   });
 
-  it('renders product cards that matches the cart state', () => {
+  it('has product cards that matches the cart state', () => {
     const wishlist = wishlistMock();
     render(<RoutedWishlist />);
     for (const { product, quantity } of wishlist) {
