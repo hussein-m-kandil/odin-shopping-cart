@@ -35,7 +35,7 @@ function Navbar({ authData = null, cartLength = 0, wishlistLength = 0 }) {
 
   const generateNavLinkClassName = () => {
     const common = `text-2xl text-app-main relative flex flex-col justify-center active:scale-95`;
-    return ({ isActive }) => `${isActive ? common : common + ' opacity-65'}`;
+    return ({ isActive }) => `${isActive ? common : common + ' opacity-60'}`;
   };
 
   const limitCount = (count) => (count > 99 ? '+99' : count.toFixed(0));
@@ -43,8 +43,8 @@ function Navbar({ authData = null, cartLength = 0, wishlistLength = 0 }) {
   return (
     <>
       <nav ref={navRef} className="fixed z-30 inset-x-0 top-0 bg-app-light p-4">
-        <div className="container mx-auto items-center flex flex-wrap">
-          <h1 className="font-bold max-[350px]:mx-auto">
+        <div className="container mx-auto items-center flex flex-wrap gap-2">
+          <h1 className="font-bold max-[350px]:mx-auto text-xl tracking-tighter">
             <Link to={HOME_PATH}>
               {import.meta.env.VITE_APP_NAME || 'App Name'}
             </Link>
