@@ -3,9 +3,9 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-app-main: #0aad0a;
-  --color-app-light: #f0f3f2;
-  --color-app-rating: #ffc908;
+  --color-app-main: #c4aa00;
+  --color-app-light: #f6f5f0;
+  --color-app-rating: #f6d600;
 }
 
 body {
