@@ -1,4 +1,4 @@
-import { Slide, toast, ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import {
   Outlet,
   ScrollRestoration,
@@ -32,9 +32,10 @@ try {
   console.log(error);
 }
 
+const ERROR_TOAST_CONFIG = { type: 'error', autoClose: 3000 };
+
 function App() {
   const [authData, setAuthData] = useState(parsedAuthData);
-  const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState([]);
   const [cart, setCart] = useState([]);
@@ -44,12 +45,13 @@ function App() {
       authServices
         .getSigninValidation(parsedAuthData['user-token'])
         .then(({ data, error }) => {
-          if (data === true) return setErrorMessage(null);
-          throw error || new Error('Authentication failed!');
+          if (data !== true) {
+            throw error?.message ? error : new Error('Authentication failed!');
+          }
         })
         .catch((error) => {
           setAuthData(null);
-          setErrorMessage(error.message);
+          toast(error.message, ERROR_TOAST_CONFIG);
         })
         .finally(() => {
           parsedAuthData = null;
@@ -70,28 +72,20 @@ function App() {
         console.log(error);
       } finally {
         setAuthData(null);
+        setWishlist([]);
+        setCart([]);
         // Just send a sign out request, no need to process the response!
         authServices.getSignout(authData['user-token']);
       }
     }
   }, [signoutPathMatch, authData]);
 
-  useEffect(() => {
-    if (errorMessage) {
-      toast(errorMessage, {
-        type: 'error',
-        autoClose: 3000,
-        transition: Slide,
-      });
-    }
-  }, [errorMessage]);
-
   const authenticate = (newAuthData) => {
     setAuthData(newAuthData);
     try {
       localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(newAuthData));
     } catch {
-      setErrorMessage('Storing authentication data failed!');
+      toast('Storing authentication data failed!', ERROR_TOAST_CONFIG);
     }
   };
 
@@ -106,9 +100,11 @@ function App() {
           console.log(error);
         } finally {
           setAuthData(null);
+          setWishlist([]);
+          setCart([]);
         }
       })
-      .catch((error) => setErrorMessage(error.message));
+      .catch((error) => toast(error.message, ERROR_TOAST_CONFIG));
   };
 
   const updateCart = (product, quantity) => {
