@@ -50,7 +50,7 @@ function Footer() {
   };
 
   return (
-    <footer className="bg-app-main/4 p-8">
+    <footer className="bg-app-light p-8">
       <div className="container mx-auto">
         <form aria-labelledby="get-app-form-label" onSubmit={handleSubmit}>
           <div className="text-center font-light">
