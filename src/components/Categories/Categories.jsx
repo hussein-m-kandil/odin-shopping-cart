@@ -45,7 +45,7 @@ function Categories() {
             ))}
           </ul>
         ) : (
-          <p>There are no categories!</p>
+          <p className="text-center">There are no categories!</p>
         )
       ) : (
         <Loader />

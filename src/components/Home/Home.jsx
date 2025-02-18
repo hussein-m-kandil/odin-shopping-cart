@@ -48,7 +48,9 @@ function Home() {
       {!items ? (
         <Loader />
       ) : items.length < 1 ? (
-        <p>Sorry, there are no products! Please visit us later.</p>
+        <p className="text-center">
+          Sorry, there are no products! Please visit us later.
+        </p>
       ) : (
         <Products items={items} />
       )}
