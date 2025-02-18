@@ -37,7 +37,7 @@ function AuthForm() {
   const { authData, submitError, formErrors } = fetcher.data || {};
 
   useEffect(() => {
-    if (submitError) setErrorMessage(submitError);
+    if (submitError && !submitting) setErrorMessage(submitError);
     if (authData) authenticate(authData);
   }, [submitError, submitting, authenticate, authData]);
 
