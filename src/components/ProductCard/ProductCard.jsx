@@ -68,8 +68,8 @@ function ProductCard({ item }) {
               {(product.price * (quantity || 1)).toFixed(2)}$
             </span>
           </div>
-          <div className="mt-2 font-semibold flex gap-2 justify-between *:grow">
-            <label className="inline-block max-w-1/4 min-w-[2rem] h-[2rem] text-[1.8rem] overflow-hidden relative">
+          <div className="max-w-2xs mx-auto mt-2 font-semibold flex gap-2 justify-between *:grow">
+            <label className="w-[2rem] max-w-[2rem] min-w-[2rem] h-[2rem] text-[1.8rem] overflow-hidden relative">
               <input
                 className="appearance-none"
                 type="checkbox"
