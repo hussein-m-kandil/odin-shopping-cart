@@ -61,7 +61,10 @@ function AppMock() {
   );
 }
 
-afterEach(() => vi.resetAllMocks());
+afterEach(() => {
+  vi.resetAllMocks();
+  localStorage.clear();
+});
 
 const { getAllProducts, getCategory } = await import('../../services/shop');
 const { default: Home } = await import('./Home');

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { CATEGORY_PATH } from '../../App';
 import { useEffect, useState } from 'react';
 import { getAllCategories } from '../../services/shop';
+import { cacheData, getCachedData } from '../../utils/caching';
 import PageHeadline from '../PageHeadline/PageHeadline';
 import Loader from '../../Loader';
 
@@ -10,19 +11,27 @@ function Categories() {
   const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
-    let mounted = true;
-    getAllCategories()
-      .then(({ data }) => {
-        if (mounted) {
-          setErrorMessage(null);
-          setCategories(data || []);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setErrorMessage('Failed to get any products!');
-      });
-    return () => (mounted = false);
+    const cachingKey = 'categories';
+    const cachingLifeTime = 24 * 60 * 60 * 1000;
+    const cachedCategories = getCachedData(cachingKey, cachingLifeTime);
+    if (cachedCategories) {
+      setCategories(cachedCategories);
+    } else {
+      let mounted = true;
+      getAllCategories()
+        .then(({ data }) => {
+          if (mounted) {
+            setErrorMessage(null);
+            setCategories(data || []);
+            cacheData(cachingKey, data);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setErrorMessage('Failed to get any categories!');
+        });
+      return () => (mounted = false);
+    }
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/react';
-import { afterAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { getAllCategories } from '../../services/shop';
 import Categories from './Categories';
@@ -18,7 +18,10 @@ vi.mock('../../services/shop', () => {
   };
 });
 
-afterAll(() => vi.resetAllMocks());
+afterEach(() => {
+  vi.resetAllMocks();
+  localStorage.clear();
+});
 
 function RoutedCategories() {
   return (
