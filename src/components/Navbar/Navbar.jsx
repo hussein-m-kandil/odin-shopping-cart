@@ -42,14 +42,14 @@ function Navbar({ authData = null, cartLength = 0, wishlistLength = 0 }) {
 
   return (
     <>
-      <nav ref={navRef} className="fixed z-30 inset-x-0 top-0 bg-app-light p-4">
-        <div className="container mx-auto items-center flex flex-wrap gap-2">
+      <nav ref={navRef} className="fixed z-30 inset-x-0 top-0 bg-app-light p-3">
+        <div className="container mx-auto items-center flex flex-wrap gap-3">
           <h1 className="font-bold max-[350px]:mx-auto text-xl tracking-tighter">
             <Link to={HOME_PATH}>
               {import.meta.env.VITE_APP_NAME || 'App Name'}
             </Link>
           </h1>
-          <ul className="ms-auto max-[350px]:mx-auto items-center gap-2 text-center text-xs flex">
+          <ul className="ms-auto max-[350px]:mx-auto items-center gap-1 text-center text-xs flex">
             {authData ? (
               <li>
                 <NavLink
