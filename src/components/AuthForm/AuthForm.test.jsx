@@ -12,6 +12,11 @@ import userEvent from '@testing-library/user-event';
 import PropTypes from 'prop-types';
 import AuthForm from './AuthForm';
 
+// To fix a bug in node URLSearchParams
+// https://github.com/remix-run/react-router/issues/13495#issuecomment-2839707928
+import { URLSearchParams } from 'node:url';
+globalThis.URLSearchParams = URLSearchParams;
+
 const AUTH_DATA = { objectId: 'Fake id', 'user-token': 'Fake user token!' };
 
 vi.mock('../../services/auth', () => {
@@ -43,7 +48,7 @@ const signinPath = '/signin';
 
 function RoutedForm({
   routerOptions = {
-    initialEntries: ['/signup'],
+    initialEntries: [signupPath],
     initialIndex: 0,
   },
 }) {
