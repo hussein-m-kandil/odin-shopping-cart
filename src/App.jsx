@@ -20,6 +20,7 @@ export const SIGNOUT_PATH = '/signout';
 export const WISHLIST_PATH = '/wishlist';
 export const CATEGORY_PATH = '/category';
 export const CATEGORIES_PATH = '/categories';
+export const APP_NAME = 'Odin Shopping Cart';
 const AUTH_DATA_KEY = 'seco_seco';
 
 let parsedAuthData = null;

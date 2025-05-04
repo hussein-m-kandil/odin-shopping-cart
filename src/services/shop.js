@@ -1,19 +1,22 @@
 import { sendRequest } from './helpers';
 
-const BASE_URL = import.meta.env.VITE_SHOP_BASE;
+export const BASE_URL = 'https://fakestoreapi.com';
+export const ALL_CATEGORIES = '/products/categories';
+export const CATEGORY = '/products/category';
+export const ALL_PRODUCTS = '/products';
 
 export function get(endpoint) {
   return sendRequest('get', `${BASE_URL}${endpoint}`);
 }
 
 export function getAllProducts() {
-  return get(import.meta.env.VITE_SHOP_ALL_PRODUCTS);
+  return get(ALL_PRODUCTS);
 }
 
 export function getAllCategories() {
-  return get(import.meta.env.VITE_SHOP_ALL_CATEGORIES);
+  return get(ALL_CATEGORIES);
 }
 
 export function getCategory(category) {
-  return get(`${import.meta.env.VITE_SHOP_CATEGORY}/${category}`);
+  return get(`${CATEGORY}/${category}`);
 }

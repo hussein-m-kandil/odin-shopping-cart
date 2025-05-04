@@ -4,6 +4,7 @@ import { FaTwitter as Twitter } from 'react-icons/fa6';
 import { FaFacebook as Facebook } from 'react-icons/fa6';
 import { FaLinkedin as LinkedIn } from 'react-icons/fa6';
 import { FaInstagram as Instagram } from 'react-icons/fa6';
+import { APP_NAME } from '../../App';
 import mastercard from '../../assets/logos/master-card-logo.png';
 import amazonPay from '../../assets/logos/amazon-pay-logo.png';
 import googlePlay from '../../assets/logos/google-play.png';
@@ -54,9 +55,7 @@ function Footer() {
       <div className="container mx-auto">
         <form aria-labelledby="get-app-form-label" onSubmit={handleSubmit}>
           <div className="text-center font-light">
-            <h2 id="get-app-form-label">
-              Get the {import.meta.env.VITE_APP_NAME} app
-            </h2>
+            <h2 id="get-app-form-label">Get the {APP_NAME} app</h2>
             <p className="text-xs text-gray-500">
               We will send you an email with the URL for our app to download it
               on your phone.

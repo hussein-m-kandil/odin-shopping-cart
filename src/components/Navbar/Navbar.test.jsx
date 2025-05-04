@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest';
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { APP_NAME } from '../../App.jsx';
 import Navbar from './Navbar.jsx';
 
 function RoutedNavbar(props) {
@@ -13,8 +14,6 @@ function RoutedNavbar(props) {
     />
   );
 }
-
-const APP_NAME = import.meta.env.VITE_APP_NAME;
 
 const AUTH_DATA = {
   token:
