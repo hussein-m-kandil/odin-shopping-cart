@@ -4,11 +4,13 @@ import ComboInput from '../ComboInput/ComboInput';
 import Button from '../Button/Button';
 import { SIGNOUT_PATH } from '../../App';
 import PageTitle from '../../PageTitle';
+import { BiLoaderAlt } from 'react-icons/bi';
 
 function Profile() {
   const { authData, deleteUser } = useOutletContext();
   const [usernameValue, setUsernameValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const invalidUsernameValue = Boolean(errorMessage);
 
@@ -24,7 +26,10 @@ function Profile() {
 
   const handleDeleteAccount = (e) => {
     e.preventDefault();
-    if (!errorMessage) deleteUser();
+    if (!errorMessage) {
+      setDeleting(true);
+      deleteUser().catch(() => setDeleting(false));
+    }
   };
 
   return (
@@ -65,6 +70,12 @@ function Profile() {
             className="bg-orange-400"
             disabled={!usernameValue || Boolean(errorMessage)}
           >
+            {deleting && (
+              <BiLoaderAlt
+                className="inline-block me-2 motion-safe:animate-spin"
+                title="Deleting..."
+              />
+            )}
             Delete my account permanently
           </Button>
         </div>

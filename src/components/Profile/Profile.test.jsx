@@ -21,7 +21,7 @@ const AUTH_DATA = {
   },
 };
 
-const deleteUserMock = vi.fn();
+const deleteUserMock = vi.fn(() => new Promise((resolve) => resolve()));
 
 const PUBLIC_CONTENT = 'Public Content';
 

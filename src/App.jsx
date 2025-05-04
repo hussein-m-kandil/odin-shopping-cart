@@ -1,11 +1,11 @@
 import { toast, ToastContainer } from 'react-toastify';
 import {
   Outlet,
-  ScrollRestoration,
   useMatch,
   useNavigate,
+  ScrollRestoration,
 } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as authServices from './services/auth';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
@@ -35,12 +35,23 @@ try {
 
 const ERROR_TOAST_CONFIG = { type: 'error', autoClose: 3000 };
 
+const SUCCESS_TOAST_CONFIG = { type: 'success', autoClose: 3000 };
+
 function App() {
   // authData: { token: string, user: { id: string, username: string, fullname: string, ... } }
   const [authData, setAuthData] = useState(parsedAuthData);
   const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState([]);
   const [cart, setCart] = useState([]);
+
+  const navigate = useNavigate();
+
+  const clearUserState = useCallback(() => {
+    navigate(HOME_PATH);
+    setAuthData(null);
+    setWishlist([]);
+    setCart([]);
+  }, [navigate]);
 
   useEffect(() => {
     if (parsedAuthData) {
@@ -73,12 +84,10 @@ function App() {
       } catch (error) {
         console.log(error);
       } finally {
-        setAuthData(null);
-        setWishlist([]);
-        setCart([]);
+        clearUserState();
       }
     }
-  }, [signoutPathMatch, authData]);
+  }, [signoutPathMatch, authData, clearUserState]);
 
   const authenticate = (newAuthData) => {
     setAuthData(newAuthData);
@@ -90,18 +99,16 @@ function App() {
   };
 
   const deleteUser = () => {
-    authServices
+    return authServices
       .deleteUser(authData.user.id)
-      .then(({ data }) => {
-        if (!data) throw Error('Account Deletion Failed!');
+      .then(({ error }) => {
+        if (error) throw Error('Account Deletion Failed!');
         try {
           localStorage.removeItem(AUTH_DATA_KEY);
         } catch (error) {
           console.log(error);
         } finally {
-          setAuthData(null);
-          setWishlist([]);
-          setCart([]);
+          clearUserState();
         }
       })
       .catch((error) => toast(error.message, ERROR_TOAST_CONFIG));
@@ -136,12 +143,11 @@ function App() {
     }
   };
 
-  const navigate = useNavigate();
-
   const checkout = () => {
     if (authData) {
       setCart([]);
       navigate(HOME_PATH);
+      toast('Have a nice day!', SUCCESS_TOAST_CONFIG);
     } else navigate(SIGNIN_PATH);
   };
 
