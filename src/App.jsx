@@ -35,6 +35,7 @@ try {
 const ERROR_TOAST_CONFIG = { type: 'error', autoClose: 3000 };
 
 function App() {
+  // authData: { token: string, user: { id: string, username: string, fullname: string, ... } }
   const [authData, setAuthData] = useState(parsedAuthData);
   const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState([]);
@@ -43,7 +44,7 @@ function App() {
   useEffect(() => {
     if (parsedAuthData) {
       authServices
-        .getSigninValidation(parsedAuthData['user-token'])
+        .getSigninValidation(parsedAuthData.token)
         .then(({ data, error }) => {
           if (data !== true) {
             throw error?.message ? error : new Error('Authentication failed!');
@@ -74,8 +75,6 @@ function App() {
         setAuthData(null);
         setWishlist([]);
         setCart([]);
-        // Just send a sign out request, no need to process the response!
-        authServices.getSignout(authData['user-token']);
       }
     }
   }, [signoutPathMatch, authData]);
@@ -91,7 +90,7 @@ function App() {
 
   const deleteUser = () => {
     authServices
-      .deleteUser(authData.objectId)
+      .deleteUser(authData.user.id)
       .then(({ data }) => {
         if (!data) throw Error('Account Deletion Failed!');
         try {

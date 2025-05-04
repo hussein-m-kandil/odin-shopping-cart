@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { Outlet, RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { postSignin, postSignup } from '../../services/auth';
 import {
@@ -17,7 +17,20 @@ import AuthForm from './AuthForm';
 import { URLSearchParams } from 'node:url';
 globalThis.URLSearchParams = URLSearchParams;
 
-const AUTH_DATA = { objectId: 'Fake id', 'user-token': 'Fake user token!' };
+const AUTH_DATA = {
+  token:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
+    'eyJpZCI6ImY5NjNlYzBjLTI5NTMtNDVjYi1iNTI5LWJmMWZlNjlmOTFmMiIsInVzZXJuYW1lIjoic3VwZXJtYW4iL' +
+    'CJmdWxsbmFtZSI6IkNsYXJrIEtlbnQgLyBLYWwtRWwiLCJpYXQiOjE3NDYzNDM3ODMsImV4cCI6MTc0NjYwMjk4M30' +
+    '.0iI69Z7wLDkczEYlEmSkrzdKatJ3HIFlUwFb_jAZo2k',
+  user: {
+    id: 'f963ec0c-2953-45cb-b529-bf1fe69f91f2',
+    username: 'superman',
+    fullname: 'Clark Kent / Kal-El',
+    createdAt: '2025-05-02T16:36:06.697Z',
+    updatedAt: '2025-05-02T16:36:06.697Z',
+  },
+};
 
 vi.mock('../../services/auth', () => {
   const fakeAuthService = () => {
@@ -96,7 +109,7 @@ async function fillValidSignupForm(user, form) {
     },
   );
   correctSignupFormEntries.push([
-    ENTRIES_NAMES.passwordConfirmation,
+    ENTRIES_NAMES.confirm,
     fieldsValidations[ENTRIES_NAMES.password].example,
   ]);
   for (const [name, value] of correctSignupFormEntries) {
@@ -106,7 +119,7 @@ async function fillValidSignupForm(user, form) {
 
 async function fillValidSigninForm(user, form) {
   const correctSigninFormEntries = [
-    [ENTRIES_NAMES.email, fieldsValidations[ENTRIES_NAMES.email].example],
+    [ENTRIES_NAMES.username, fieldsValidations[ENTRIES_NAMES.username].example],
     [ENTRIES_NAMES.password, fieldsValidations[ENTRIES_NAMES.password].example],
   ];
   for (const [name, value] of correctSigninFormEntries) {
@@ -161,22 +174,25 @@ describe('Form controls', () => {
   it('performs a realtime validation', async () => {
     const user = userEvent.setup();
     render(<RoutedForm />);
-    const emailInput = screen.getByRole('textbox', { name: /email/i });
-    const emailErrorMessage = fieldsValidations[ENTRIES_NAMES.email].msg;
-    await user.type(emailInput, 'foo');
-    expect(screen.getByText(emailErrorMessage)).toBeInTheDocument();
-    expect(emailInput.getAttribute('aria-invalid')).toBe('true');
-    expect(emailInput.getAttribute('aria-errormessage')).toBeTruthy();
-    await user.type(emailInput, '@tar.baz');
+    const usernameInput = screen.getByRole('textbox', { name: /username/i });
+    const usernameErrorMessage = fieldsValidations[ENTRIES_NAMES.username].msg;
+    await user.type(usernameInput, 'x');
+    expect(screen.getByText(usernameErrorMessage)).toBeInTheDocument();
+    expect(usernameInput.getAttribute('aria-invalid')).toBe('true');
+    expect(usernameInput.getAttribute('aria-errormessage')).toBeTruthy();
+    await user.type(usernameInput, '@tar.baz');
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(screen.queryByText(emailErrorMessage)).toBeNull();
-    expect(emailInput.getAttribute('aria-invalid')).toBeOneOf(['false', null]);
-    expect(emailInput.getAttribute('aria-errormessage')).toBeFalsy();
-    await user.clear(emailInput);
+    expect(screen.queryByText(usernameErrorMessage)).toBeNull();
+    expect(usernameInput.getAttribute('aria-invalid')).toBeOneOf([
+      'false',
+      null,
+    ]);
+    expect(usernameInput.getAttribute('aria-errormessage')).toBeFalsy();
+    await user.clear(usernameInput);
     await user.click(document.body);
     expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(emailInput.getAttribute('aria-invalid')).toBe('true');
-    expect(emailInput.getAttribute('aria-errormessage')).toBeTruthy();
+    expect(usernameInput.getAttribute('aria-invalid')).toBe('true');
+    expect(usernameInput.getAttribute('aria-errormessage')).toBeTruthy();
   });
 });
 
@@ -187,7 +203,7 @@ describe('Form submit', () => {
     await fillValidSignupForm(user, screen.getByRole('form'));
     const submitter = screen.getByRole('button', { name: /sign/i });
     expect(submitter.disabled).toBe(false);
-    await user.click(submitter);
+    fireEvent.click(submitter);
     expect(screen.getByTitle(/submitting/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign/i }).disabled).toBe(true);
     expect(screen.getAllByRole('textbox').every((inp) => inp.disabled)).toBe(
@@ -213,18 +229,18 @@ describe('Form submit', () => {
   it('does not submit if there is an invalid field', async () => {
     const user = userEvent.setup();
     render(<RoutedForm />);
-    const emailErrorMessage = fieldsValidations[ENTRIES_NAMES.email].msg;
-    await user.type(screen.getByRole('textbox', { name: /email/i }), 'blah');
-    const emailErrorElement = screen.getByText(emailErrorMessage);
+    const usernameErrorMessage = fieldsValidations[ENTRIES_NAMES.username].msg;
+    await user.type(screen.getByRole('textbox', { name: /username/i }), 'x');
+    const usernameErrorElement = screen.getByText(usernameErrorMessage);
     const submitter = screen.getByRole('button', { name: /sign/i });
-    expect(emailErrorElement).toBeInTheDocument();
+    expect(usernameErrorElement).toBeInTheDocument();
     expect(submitter).toBeInTheDocument();
     expect(submitter.disabled).toBe(true);
     await user.click(submitter);
     await user.keyboard('{Enter}');
     expect(submitter).toBeInTheDocument();
     expect(submitter.disabled).toBe(true);
-    expect(emailErrorElement).toBeInTheDocument();
+    expect(usernameErrorElement).toBeInTheDocument();
   });
 
   it('displays sign-up request error, then removes it on first change', async () => {

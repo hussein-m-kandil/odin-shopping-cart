@@ -6,22 +6,19 @@ import { SIGNOUT_PATH } from '../../App';
 import Profile from './Profile';
 import userEvent from '@testing-library/user-event';
 
-const authData = {
-  lastLogin: 1739078427194,
-  userStatus: 'ENABLED',
-  created: 1738481022904,
-  accountType: 'BACKENDLESS',
-  socialAccount: 'BACKENDLESS',
-  ownerId: '195EFE37-10D3-4C7C-816E-DACB8EE02E94',
-  oAuthIdentities: null,
-  phone: '01234567890',
-  name: 'Superman',
-  ___class: 'Users',
-  blUserLocale: 'en',
-  'user-token': '84F4B8FE-212E-4470-831B-B309B4EC1C6F',
-  updated: null,
-  objectId: '195EFE37-10D3-4C7C-816E-DACB8EE02E94',
-  email: 'superman@krypton.universe',
+const AUTH_DATA = {
+  token:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
+    'eyJpZCI6ImY5NjNlYzBjLTI5NTMtNDVjYi1iNTI5LWJmMWZlNjlmOTFmMiIsInVzZXJuYW1lIjoic3VwZXJtYW4iL' +
+    'CJmdWxsbmFtZSI6IkNsYXJrIEtlbnQgLyBLYWwtRWwiLCJpYXQiOjE3NDYzNDM3ODMsImV4cCI6MTc0NjYwMjk4M30' +
+    '.0iI69Z7wLDkczEYlEmSkrzdKatJ3HIFlUwFb_jAZo2k',
+  user: {
+    id: 'f963ec0c-2953-45cb-b529-bf1fe69f91f2',
+    username: 'superman',
+    fullname: 'Clark Kent / Kal-El',
+    createdAt: '2025-05-02T16:36:06.697Z',
+    updatedAt: '2025-05-02T16:36:06.697Z',
+  },
 };
 
 const deleteUserMock = vi.fn();
@@ -37,7 +34,9 @@ function RoutedProfile() {
           {
             path: '/',
             element: (
-              <Outlet context={{ authData, deleteUser: deleteUserMock }} />
+              <Outlet
+                context={{ authData: AUTH_DATA, deleteUser: deleteUserMock }}
+              />
             ),
             children: [
               { index: true, element: <div>{PUBLIC_CONTENT}</div> },
@@ -56,13 +55,17 @@ afterEach(() => vi.resetAllMocks());
 describe('Profile', () => {
   it('has user data', () => {
     render(<RoutedProfile />);
-    expect(screen.getByText(new RegExp(authData.name))).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(authData.email))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(AUTH_DATA.user.fullname)),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(AUTH_DATA.user.username)),
+    ).toBeInTheDocument();
   });
 
   it('has user name in the page title', () => {
     render(<RoutedProfile />);
-    expect(document.title).toMatch(new RegExp(authData.name));
+    expect(document.title).toMatch(new RegExp(AUTH_DATA.user.fullname));
   });
 
   it('has sign out link', () => {
@@ -72,47 +75,52 @@ describe('Profile', () => {
     expect(signoutLink.href).toMatch(new RegExp(`${SIGNOUT_PATH}$`));
   });
 
-  it('has a form with an email field for deleting user account', () => {
+  it('has a form with an username field for deleting user account', () => {
     render(<RoutedProfile />);
     expect(screen.getByRole('form', { name: /delete/i })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: /username/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
   });
 });
 
 describe('Delete user form', () => {
-  it('does disabled while the email field is empty', () => {
+  it('does disabled while the username field is empty', () => {
     render(<RoutedProfile />);
     expect(screen.getByRole('button', { name: /delete/i })).toBeDisabled();
   });
 
-  it('has validation error on invalid email & remains disabled', async () => {
-    const user = userEvent.setup();
-    render(<RoutedProfile />);
-    await user.type(screen.getByRole('textbox', { name: /email/i }), 'x@y.z');
-    await user.keyboard('{Enter}');
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeInvalid();
-    expect(screen.getByText(/email does not match/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /delete/i })).toBeDisabled();
-  });
-
-  it('removes validation error on empty email but remains disabled', async () => {
-    const user = userEvent.setup();
-    render(<RoutedProfile />);
-    await user.type(screen.getByRole('textbox', { name: /email/i }), 'x@y.z');
-    await user.clear(screen.getByRole('textbox', { name: /email/i }));
-    await user.keyboard('{Enter}');
-    expect(screen.queryByText(/email does not match/i)).toBeNull();
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeValid();
-    expect(screen.getByRole('button', { name: /delete/i })).toBeDisabled();
-  });
-
-  it('deletes user by its `objectId` & redirects to public route on submit', async () => {
+  it('has validation error on invalid username & remains disabled', async () => {
     const user = userEvent.setup();
     render(<RoutedProfile />);
     await user.type(
-      screen.getByRole('textbox', { name: /email/i }),
-      authData.email,
+      screen.getByRole('textbox', { name: /username/i }),
+      'foobar',
+    );
+    await user.keyboard('{Enter}');
+    expect(screen.getByRole('textbox', { name: /username/i })).toBeInvalid();
+    expect(screen.getByText(/username does not match/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /delete/i })).toBeDisabled();
+  });
+
+  it('removes validation error on empty username but remains disabled', async () => {
+    const user = userEvent.setup();
+    render(<RoutedProfile />);
+    await user.type(screen.getByRole('textbox', { name: /username/i }), 'x');
+    await user.clear(screen.getByRole('textbox', { name: /username/i }));
+    await user.keyboard('{Enter}');
+    expect(screen.queryByText(/username does not match/i)).toBeNull();
+    expect(screen.getByRole('textbox', { name: /username/i })).toBeValid();
+    expect(screen.getByRole('button', { name: /delete/i })).toBeDisabled();
+  });
+
+  it('deletes user by its id & redirects to public route on submit', async () => {
+    const user = userEvent.setup();
+    render(<RoutedProfile />);
+    await user.type(
+      screen.getByRole('textbox', { name: /username/i }),
+      AUTH_DATA.user.username,
     );
     await user.keyboard('{Enter}');
     expect(deleteUserMock).toBeCalledTimes(1);

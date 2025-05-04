@@ -48,7 +48,20 @@ const {
   WISHLIST_PATH,
 } = await import('./App');
 
-const AUTH_DATA = { objectId: 'Fake id', 'user-token': 'Fake token' };
+const AUTH_DATA = {
+  token:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
+    'eyJpZCI6ImY5NjNlYzBjLTI5NTMtNDVjYi1iNTI5LWJmMWZlNjlmOTFmMiIsInVzZXJuYW1lIjoic3VwZXJtYW4iL' +
+    'CJmdWxsbmFtZSI6IkNsYXJrIEtlbnQgLyBLYWwtRWwiLCJpYXQiOjE3NDYzNDM3ODMsImV4cCI6MTc0NjYwMjk4M30' +
+    '.0iI69Z7wLDkczEYlEmSkrzdKatJ3HIFlUwFb_jAZo2k',
+  user: {
+    id: 'f963ec0c-2953-45cb-b529-bf1fe69f91f2',
+    username: 'superman',
+    fullname: 'Clark Kent / Kal-El',
+    createdAt: '2025-05-02T16:36:06.697Z',
+    updatedAt: '2025-05-02T16:36:06.697Z',
+  },
+};
 const PRIVATE_CONTENT = 'Private content';
 const SIGNIN_CONTENT = 'Sign in content';
 const PUBLIC_CONTENT = 'Public content';

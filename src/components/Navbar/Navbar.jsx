@@ -59,7 +59,7 @@ function Navbar({ authData = null, cartLength = 0, wishlistLength = 0 }) {
                 >
                   <BsCircleFill />
                   <span className="text-white text-lg absolute top-1/2 left-1/2 -translate-1/2">
-                    {authData.name[0].toUpperCase()}
+                    {authData.user.username[0].toUpperCase()}
                   </span>
                 </NavLink>
               </li>
@@ -123,7 +123,14 @@ function Navbar({ authData = null, cartLength = 0, wishlistLength = 0 }) {
 }
 
 Navbar.propTypes = {
-  authData: PropTypes.object,
+  authData: PropTypes.shape({
+    token: PropTypes.string,
+    user: PropTypes.shape({
+      id: PropTypes.string,
+      username: PropTypes.string,
+      fullname: PropTypes.string,
+    }),
+  }),
   wishlistLength: PropTypes.number,
   cartLength: PropTypes.number,
 };

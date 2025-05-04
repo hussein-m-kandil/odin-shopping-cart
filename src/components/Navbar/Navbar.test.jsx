@@ -16,6 +16,21 @@ function RoutedNavbar(props) {
 
 const APP_NAME = import.meta.env.VITE_APP_NAME;
 
+const AUTH_DATA = {
+  token:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
+    'eyJpZCI6ImY5NjNlYzBjLTI5NTMtNDVjYi1iNTI5LWJmMWZlNjlmOTFmMiIsInVzZXJuYW1lIjoic3VwZXJtYW4iL' +
+    'CJmdWxsbmFtZSI6IkNsYXJrIEtlbnQgLyBLYWwtRWwiLCJpYXQiOjE3NDYzNDM3ODMsImV4cCI6MTc0NjYwMjk4M30' +
+    '.0iI69Z7wLDkczEYlEmSkrzdKatJ3HIFlUwFb_jAZo2k',
+  user: {
+    id: 'f963ec0c-2953-45cb-b529-bf1fe69f91f2',
+    username: 'superman',
+    fullname: 'Clark Kent / Kal-El',
+    createdAt: '2025-05-02T16:36:06.697Z',
+    updatedAt: '2025-05-02T16:36:06.697Z',
+  },
+};
+
 describe('Navbar content', () => {
   it('contains heading with the app name', () => {
     render(<RoutedNavbar />);
@@ -55,7 +70,7 @@ describe('Navbar content', () => {
   });
 
   it('contains nav link to profile page for an authenticated user', () => {
-    render(<RoutedNavbar authData={{ name: 'H' }} />);
+    render(<RoutedNavbar authData={AUTH_DATA} />);
     expect(screen.getByRole('link', { name: /profile/i })).toBeInTheDocument();
   });
 });

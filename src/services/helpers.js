@@ -21,20 +21,17 @@ export async function sendRequest(httpMethod, ...reqArgs) {
   try {
     return await axios[method](...reqArgs);
   } catch (error) {
-    // https://axios-http.com/docs/handling_errors
-    if (error.response) {
-      // The status code falls out of the range of 2xx
-      if (error.response.data && error.response.data.message) {
-        return { error: error.response.data };
+    if (error.response?.data?.error) {
+      if (error.response.data.error.message) {
+        return error.response.data;
       }
-      return { error: `${error.response.status}: Bad Request!` };
+      if (typeof error.response.data.error === 'string') {
+        return { error: { message: error.response.data.error } };
+      }
     }
+    if (error.response?.data?.message) return { error: error.response.data };
     return {
-      error: {
-        message: error.request
-          ? 'No response was received! Please try again later.'
-          : 'Oops, something went wrong! Please try again later.',
-      },
+      error: { message: 'Something went wrong! Please try again later.' },
     };
   }
 }

@@ -3,39 +3,22 @@ import { SIGNIN_PATH, SIGNUP_PATH } from '../../App';
 import { postSignin, postSignup } from '../../services/auth';
 
 export const ENTRIES_NAMES = {
-  name: 'name',
-  email: 'email',
-  phone: 'phone',
+  fullname: 'fullname',
+  username: 'username',
   password: 'password',
-  passwordConfirmation: 'password-confirmation',
+  confirm: 'confirm',
 };
 
 export const fieldsValidations = {
-  [ENTRIES_NAMES.name]: {
+  [ENTRIES_NAMES.fullname]: {
     regex: /^.{3,}$/,
-    msg: 'A name must contain more than 2 characters',
+    msg: 'Your name must contain more than 3 characters',
     example: 'Superman',
   },
-  [ENTRIES_NAMES.email]: {
-    regex: RegExp(
-      [
-        "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/",
-        '=?^_`{|}~-]+)*|"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21',
-        '\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])',
-        '*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]',
-        '*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))',
-        '\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*',
-        '[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|',
-        '\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])',
-      ].join(''),
-    ),
-    msg: 'Malformed email address!',
-    example: 'superman@krypton.universe',
-  },
-  [ENTRIES_NAMES.phone]: {
-    regex: /^01[0125][0-9]{8}$/,
-    msg: 'Accepts only Egyptian phone numbers!',
-    example: '01234567890',
+  [ENTRIES_NAMES.username]: {
+    regex: /^.{3,}$/,
+    msg: 'Your username must contain more than 3 character',
+    example: 'Clark Kent / Kal-El',
   },
   [ENTRIES_NAMES.password]: {
     regex: RegExp(
@@ -57,12 +40,12 @@ const commonEntryAttrs = {
 };
 
 export const signinEntriesData = {
-  [ENTRIES_NAMES.email]: {
+  [ENTRIES_NAMES.username]: {
     ...commonEntryData,
     attrs: {
       ...commonEntryAttrs,
-      type: 'email',
-      label: 'Email',
+      type: 'text',
+      label: 'Username',
     },
   },
   [ENTRIES_NAMES.password]: {
@@ -77,7 +60,7 @@ export const signinEntriesData = {
 };
 
 export const signupEntriesData = {
-  [ENTRIES_NAMES.name]: {
+  [ENTRIES_NAMES.fullname]: {
     ...commonEntryData,
     attrs: {
       ...commonEntryAttrs,
@@ -85,16 +68,8 @@ export const signupEntriesData = {
       label: 'Name',
     },
   },
-  [ENTRIES_NAMES.phone]: {
-    ...commonEntryData,
-    attrs: {
-      ...commonEntryAttrs,
-      type: 'tel',
-      label: 'Phone',
-    },
-  },
   ...signinEntriesData,
-  [ENTRIES_NAMES.passwordConfirmation]: {
+  [ENTRIES_NAMES.confirm]: {
     ...commonEntryData,
     attrs: {
       ...commonEntryAttrs,
@@ -110,7 +85,7 @@ export function validateFormData(formData) {
   formData.entries().forEach(([name, value]) => {
     if (!value) {
       errors[name] = `${signupEntriesData[name].attrs.label} is required!`;
-    } else if (name === ENTRIES_NAMES.passwordConfirmation) {
+    } else if (name === ENTRIES_NAMES.confirm) {
       if (value !== formData.get(ENTRIES_NAMES.password)) {
         errors[name] = 'Password confirmation does not match!';
       }
@@ -125,23 +100,6 @@ export function validateFormData(formData) {
   }
 }
 
-async function signin(formData) {
-  // The API expects the identity field mapped to 'login' instead of 'email'!
-  const signinFormData = new FormData();
-  signinFormData.append('login', formData.get(ENTRIES_NAMES.email));
-  signinFormData.append(
-    ENTRIES_NAMES.password,
-    formData.get(ENTRIES_NAMES.password),
-  );
-  const { data, error } = await postSignin(signinFormData);
-  if (error) {
-    throw error.message
-      ? { ...error, message: error.message.replace(/\slogin\s/i, ' email ') }
-      : error;
-  }
-  return { authData: data };
-}
-
 export async function authFormAction({ request }) {
   const formData = await request.formData();
   const intent = formData.get('intent');
@@ -149,18 +107,12 @@ export async function authFormAction({ request }) {
   const formErrors = validateFormData(formData);
   if (formErrors) return { formErrors };
   try {
-    if (intent === SIGNUP_PATH) {
-      formData.delete(ENTRIES_NAMES.passwordConfirmation);
-      const { error } = await postSignup(formData);
+    if (intent === SIGNUP_PATH || intent === SIGNIN_PATH) {
+      const { data, error } = await (intent === SIGNUP_PATH
+        ? postSignup(formData)
+        : postSignin(formData));
       if (error) throw error;
-      try {
-        // Post signin request to get the user token
-        return await signin(formData);
-      } catch {
-        redirect(SIGNIN_PATH);
-      }
-    } else if (intent === SIGNIN_PATH) {
-      return await signin(formData);
+      return { authData: data };
     } else {
       redirect(intent);
     }

@@ -2,9 +2,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   postSignin,
   postSignup,
-  getSignout,
   deleteUser,
   getSigninValidation,
+  TOKEN_VERIFICATION_ENDPOINT,
+  DELETE_USER_ENDPOINT,
+  SIGN_UP_ENDPOINT,
+  SIGN_IN_ENDPOINT,
+  BASE_URL,
 } from './auth';
 import axios from 'axios';
 
@@ -20,13 +24,10 @@ vi.mock('axios', () => {
 
 afterEach(() => vi.resetAllMocks());
 
-const BASE_URL = import.meta.env.VITE_AUTH_BASE;
-
 describe('postSignup', () => {
   it('calls the correct Axios method with the correct arguments', async () => {
-    const END_POINT = import.meta.env.VITE_AUTH_SIGN_UP;
     const options = { headers: { 'Content-Type': 'application/json' } };
-    const url = `${BASE_URL}${END_POINT}`;
+    const url = `${BASE_URL}${SIGN_UP_ENDPOINT}`;
     const body = new FormData();
     await expect(postSignup(body)).resolves.not.toThrowError();
     expect(axios.post).toHaveBeenCalledTimes(1);
@@ -36,9 +37,8 @@ describe('postSignup', () => {
 
 describe('postSignin', () => {
   it('calls the correct Axios method with the correct arguments', async () => {
-    const END_POINT = import.meta.env.VITE_AUTH_SIGN_IN;
     const options = { headers: { 'Content-Type': 'application/json' } };
-    const url = `${BASE_URL}${END_POINT}`;
+    const url = `${BASE_URL}${SIGN_IN_ENDPOINT}`;
     const body = new FormData();
     await expect(postSignin(body)).resolves.not.toThrowError();
     expect(axios.post).toHaveBeenCalledTimes(1);
@@ -48,22 +48,10 @@ describe('postSignin', () => {
 
 describe('getSigninValidation', () => {
   it('calls the correct Axios method with the correct arguments', async () => {
-    const END_POINT = import.meta.env.VITE_AUTH_SIGN_IN_VALIDATION;
     const TOKEN = '<token>';
-    const url = `${BASE_URL}${END_POINT}/${TOKEN}`;
+    const url = `${BASE_URL}${TOKEN_VERIFICATION_ENDPOINT}`;
+    const options = { headers: { Authorization: TOKEN } };
     await expect(getSigninValidation(TOKEN)).resolves.not.toThrowError();
-    expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenLastCalledWith(url);
-  });
-});
-
-describe('getSignout', () => {
-  it('calls the correct Axios method with the correct arguments', async () => {
-    const END_POINT = import.meta.env.VITE_AUTH_SIGN_OUT;
-    const url = `${BASE_URL}${END_POINT}`;
-    const TOKEN = '<token>';
-    const options = { headers: { 'user-token': TOKEN } };
-    await expect(getSignout(TOKEN)).resolves.not.toThrowError();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenLastCalledWith(url, options);
   });
@@ -71,10 +59,9 @@ describe('getSignout', () => {
 
 describe('deleteUser', () => {
   it('calls the correct Axios method with the correct arguments', async () => {
-    const END_POINT = import.meta.env.VITE_AUTH_DELETE_USER;
-    const OBJECT_ID = 'objectId';
-    const url = `${BASE_URL}${END_POINT}/${OBJECT_ID}`;
-    await expect(deleteUser(OBJECT_ID)).resolves.not.toThrowError();
+    const ID = 'user-id';
+    const url = `${BASE_URL}${DELETE_USER_ENDPOINT}/${ID}`;
+    await expect(deleteUser(ID)).resolves.not.toThrowError();
     expect(axios.delete).toHaveBeenCalledTimes(1);
     expect(axios.delete).toHaveBeenLastCalledWith(url);
   });

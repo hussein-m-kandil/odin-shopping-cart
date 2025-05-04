@@ -56,7 +56,7 @@ function AuthForm() {
         attrs: { ...entryData.attrs, value },
       },
     };
-    const { password, passwordConfirmation } = ENTRIES_NAMES;
+    const { password, confirm: passwordConfirmation } = ENTRIES_NAMES;
     const formData = new FormData();
     formData.append(name, value);
     if (name === passwordConfirmation) {
