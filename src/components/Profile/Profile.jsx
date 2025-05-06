@@ -28,7 +28,7 @@ function Profile() {
     e.preventDefault();
     if (!errorMessage) {
       setDeleting(true);
-      deleteUser().catch(() => setDeleting(false));
+      deleteUser().finally(() => setDeleting(false));
     }
   };
 

@@ -59,10 +59,12 @@ describe('getSigninValidation', () => {
 
 describe('deleteUser', () => {
   it('calls the correct Axios method with the correct arguments', async () => {
+    const TOKEN = '<token>';
     const ID = 'user-id';
     const url = `${BASE_URL}${DELETE_USER_ENDPOINT}/${ID}`;
-    await expect(deleteUser(ID)).resolves.not.toThrowError();
+    const options = { headers: { Authorization: TOKEN } };
+    await expect(deleteUser(ID, TOKEN)).resolves.not.toThrowError();
     expect(axios.delete).toHaveBeenCalledTimes(1);
-    expect(axios.delete).toHaveBeenLastCalledWith(url);
+    expect(axios.delete).toHaveBeenLastCalledWith(url, options);
   });
 });

@@ -100,7 +100,7 @@ function App() {
 
   const deleteUser = () => {
     return authServices
-      .deleteUser(authData.user.id)
+      .deleteUser(authData.user.id, authData.token)
       .then(({ error }) => {
         if (error) throw Error('Account Deletion Failed!');
         try {

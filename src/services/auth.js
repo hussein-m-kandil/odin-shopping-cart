@@ -30,8 +30,9 @@ export function getSigninValidation(userToken) {
   return sendRequest('get', url, options);
 }
 
-export function deleteUser(id) {
+export function deleteUser(id, userToken) {
   const END_POINT = DELETE_USER_ENDPOINT;
   const url = `${BASE_URL}${END_POINT}/${id}`;
-  return sendRequest('delete', url);
+  const options = { headers: { Authorization: userToken } };
+  return sendRequest('delete', url, options);
 }
